@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { BodyFigure } from "@/components/body/BodyFigure";
+import { BodyAnatomy } from "@/components/body/BodyAnatomy";
 import { cn } from "@/lib/cn";
 import { formatNumber, formatSigned } from "@/lib/domain/metrics";
 import type { MeasurementChange } from "@/lib/domain/dashboard";
@@ -20,15 +20,6 @@ const GROUP_TO_SITE: Partial<Record<string, MeasurementSite[]>> = {
   glutes: ["hip"],
   calves: ["calf"],
 };
-
-function heat(t: number) {
-  // Sem estímulo: grafite. Mais séries: vermelho-músculo.
-  if (t <= 0) return "#33393d";
-  const a = [92, 52, 54];
-  const b = [255, 77, 72];
-  const mix = a.map((v, i) => Math.round(v + ((b[i] ?? v) - v) * t));
-  return `rgb(${mix.join(",")})`;
-}
 
 export function BodyMapPanel({
   groups,
@@ -65,9 +56,9 @@ export function BodyMapPanel({
         </div>
 </header>
 
-      <div className="relative mx-auto mt-4 aspect-[210/228] w-full max-w-[380px]">
-        <BodyFigure
-          colorFor={(g) => heat(intensity(g))}
+      <div className="relative mx-auto mt-4 aspect-[966/1024] w-full max-w-[420px]">
+        <BodyAnatomy
+          intensityFor={intensity}
           selected={selected}
           onSelect={setSelected}
           labelFor={(g) => `${groups.find((x) => x.slug === g)?.name ?? g}: ${formatNumber(stimulus[g] ?? 0, 1)} séries`}
