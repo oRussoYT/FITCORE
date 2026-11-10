@@ -26,7 +26,7 @@ function Reveal({ children, delay = 0, className }: { children: React.ReactNode;
   );
 }
 
-function KineticWord({ children, from, progress }: { children: string; from: number; progress: ReturnType<typeof useScroll>["scrollYProgress"] }) {
+function KineticWord({ children, from, progress }: { children: React.ReactNode; from: number; progress: ReturnType<typeof useScroll>["scrollYProgress"] }) {
   const reduce = useReducedMotion();
   const x = useTransform(progress, [0, 1], [`${from}%`, `${-from}%`]);
   return (
