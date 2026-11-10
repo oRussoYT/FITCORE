@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+/*
+ * Identidade FITCORE
+ * Grafite em camadas (não preto chapado), texto em branco-osso,
+ * verde-limão reservado para o que realmente importa (meta, ganho, ação principal).
+ * Estímulo de treino usa azul-gelo; medida confirmada usa limão — nunca se confundem.
+ */
+@theme {
+  --color-ink: #0d0f10;
+  --color-graphite: #141719;
+  --color-surface: #1a1e21;
+  --color-raised: #22272b;
+  --color-line: #2c3236;
+  --color-line-strong: #3a4146;
+  --color-bone: #eceee8;
+  --color-mist: #a3aaa6;
+  --color-fog: #6f7773;
+  --color-lime: #c8f03c;
+  --color-lime-deep: #9cc21a;
+  --color-ice: #8fc9f2;
+  --color-amber: #f0b64a;
+  --color-coral: #ff7a66;
+
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-panel: 18px;
+  --radius-control: 10px;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    background: var(--color-ink);
+  }
+  body {
+    background: var(--color-ink);
+    color: var(--color-bone);
+    font-family: var(--font-sans);
+    font-feature-settings: "tnum" 1, "ss01" 1;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--color-lime) 35%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-lime);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+}
+
+@layer utilities {
+  /* Números grandes: Archivo condensada, peso alto, alinhamento tabular */
+  .type-metric {
+    font-stretch: 75%;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    line-height: 0.95;
+  }
+  /* Títulos: Archivo expandida, peso médio */
+  .type-display {
+    font-stretch: 112%;
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+  }
+  .type-label {
+    font-size: 0.8125rem;
+    color: var(--color-mist);
+    letter-spacing: 0.005em;
+  }
+  .panel {
+    background: linear-gradient(180deg, color-mix(in oklab, var(--color-surface) 100%, white 1.5%), var(--color-surface));
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-panel);
+  }
+  .hairline {
+    border-color: var(--color-line);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
