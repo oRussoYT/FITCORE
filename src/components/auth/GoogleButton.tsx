@@ -5,8 +5,12 @@ import { Button } from "@/components/ui/Button";
 import { getBrowserClient } from "@/lib/supabase/client";
 import { authErrorMessage } from "@/lib/validation/auth";
 
+/** Só aparece quando o login com Google foi ativado no Supabase (NEXT_PUBLIC_GOOGLE_AUTH_ENABLED=true). */
+export const googleAuthEnabled = process.env.NEXT_PUBLIC_GOOGLE_AUTH_ENABLED === "true";
+
 export function GoogleButton({ next = "/dashboard", onError }: { next?: string; onError: (msg: string) => void }) {
   const [loading, setLoading] = useState(false);
+  if (!googleAuthEnabled) return null;
 
   async function handleClick() {
     setLoading(true);

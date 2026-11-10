@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { GoogleButton } from "@/components/auth/GoogleButton";
+import { GoogleButton, googleAuthEnabled } from "@/components/auth/GoogleButton";
 import { Button } from "@/components/ui/Button";
 import { Notice } from "@/components/ui/Feedback";
 import { Input } from "@/components/ui/Field";
@@ -62,12 +62,16 @@ export function LoginForm() {
         </Button>
       </form>
 
+      {googleAuthEnabled && (
+        <>
       <div className="my-6 flex items-center gap-3 text-[12px] text-fog">
         <span className="h-px flex-1 bg-line" />
         ou
         <span className="h-px flex-1 bg-line" />
       </div>
       <GoogleButton next={next} onError={setError} />
+        </>
+      )}
     </div>
   );
 }
