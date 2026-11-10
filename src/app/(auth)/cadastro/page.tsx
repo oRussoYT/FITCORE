@@ -109,6 +109,8 @@ export default function SignupPage() {
         <span className="h-px flex-1 bg-line" />
       </div>
       <GoogleButton next="/onboarding" onError={setError} />
+        </>
+      )}
     </div>
   );
 }
