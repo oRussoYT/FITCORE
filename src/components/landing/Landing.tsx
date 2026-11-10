@@ -83,11 +83,11 @@ export function Landing({ loggedIn }: { loggedIn: boolean }) {
           aria-hidden
           className="pointer-events-none absolute left-1/2 top-[18%] size-[70vmax] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(200,240,60,0.13),transparent_60%)]"
         />
-        <motion.div style={reduce ? undefined : { y: bodyY }} className="pointer-events-auto absolute inset-x-0 top-24 mx-auto w-[min(92vw,720px)] opacity-90">
+        <motion.div style={reduce ? undefined : { y: bodyY }} className="pointer-events-auto absolute inset-x-0 top-20 z-10 mx-auto w-[min(92vw,700px)] drop-shadow-[0_40px_80px_rgba(0,0,0,0.6)]">
           <AnatomyShowcase />
         </motion.div>
 
-        <h1 className="type-metric relative z-10 select-none text-[clamp(72px,17vw,280px)] leading-[0.82] text-bone mix-blend-difference">
+        <h1 className="type-metric relative z-0 select-none text-[clamp(72px,17vw,280px)] leading-[0.82] text-bone/95">
           <KineticWord from={-6} progress={scrollYProgress}>
             Mede.
           </KineticWord>
@@ -99,7 +99,7 @@ export function Landing({ loggedIn }: { loggedIn: boolean }) {
           </KineticWord>
         </h1>
 
-        <div className="relative z-10 mx-auto mt-10 flex w-full max-w-[1500px] flex-col gap-6 px-5 sm:flex-row sm:items-end sm:justify-between sm:px-10">
+        <div className="relative z-20 mx-auto mt-10 flex w-full max-w-[1500px] flex-col gap-6 px-5 sm:flex-row sm:items-end sm:justify-between sm:px-10">
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

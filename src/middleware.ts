@@ -61,8 +61,9 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   if (isAdminPath) {
-    // Sem sessão: 404 (não revela que existe uma área aqui). Demais checagens no servidor e no banco.
-    if (!user) return notFound(request);
+    // Sem sessão: mesmo comportamento de qualquer página protegida (não revela nada).
+    // Logado sem permissão: 404 idêntico ao de página inexistente (decidido no servidor e no banco).
+    if (!user) return NextResponse.redirect(new URL("/login", request.url));
     response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
     response.headers.set("Cache-Control", "no-store, max-age=0");
     response.headers.set("Referrer-Policy", "no-referrer");
