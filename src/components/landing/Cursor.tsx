@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
+import { motion, useMotionValue, useSpring } from "framer-motion";
 
 /** Cursor-bolha que segue o mouse e cresce sobre links e botões (só em telas com mouse). */
 export function Cursor() {
-  const reduce = useReducedMotion();
+  const reduce = false as boolean;
   const [enabled, setEnabled] = useState(false);
   const [hover, setHover] = useState(false);
   const x = useMotionValue(-100);

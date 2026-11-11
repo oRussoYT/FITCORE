@@ -42,9 +42,9 @@ function ProgressTrace() {
           <line key={i} x1={i * step} x2={i * step} y1={0} y2={h} stroke="#22272b" strokeWidth="1" />
         ))}
         <path d={d} fill="none" stroke="#3a4146" strokeWidth="2" />
-        <path d={d} fill="none" stroke="#c8f03c" strokeWidth="2" strokeDasharray="4 7" opacity="0.55" />
+        <path d={d} fill="none" stroke="#ccff00" strokeWidth="2" strokeDasharray="4 7" opacity="0.55" />
         {[0, 4, 8, 11].map((i) => (
-          <circle key={i} cx={i * step} cy={(((pts[i] ?? 0) - 35) / 30) * h} r={i === 11 ? 5 : 3.5} fill={i === 11 ? "#c8f03c" : "#eceee8"} />
+          <circle key={i} cx={i * step} cy={(((pts[i] ?? 0) - 35) / 30) * h} r={i === 11 ? 5 : 3.5} fill={i === 11 ? "#ccff00" : "#eceee8"} />
         ))}
         <text x={0} y={h + 24} fill="#6f7773" fontSize="12">
           semana 1

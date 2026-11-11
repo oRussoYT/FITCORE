@@ -16,7 +16,7 @@ export function WeightChart({ data }: { data: Array<{ date: string; value: numbe
             contentStyle={{ background: "#22272b", border: "1px solid #3a4146", borderRadius: 10, fontSize: 12 }}
             formatter={(v) => [`${formatNumber(Number(v), 1)} kg`, "Peso"]}
           />
-          <Line type="monotone" dataKey="value" stroke="#eceee8" strokeWidth={2} dot={{ r: 3, fill: "#eceee8", stroke: "none" }} activeDot={{ r: 5, fill: "#c8f03c", stroke: "none" }} animationDuration={900} />
+          <Line type="monotone" dataKey="value" stroke="#eceee8" strokeWidth={2} dot={{ r: 3, fill: "#eceee8", stroke: "none" }} activeDot={{ r: 5, fill: "#ccff00", stroke: "none" }} animationDuration={900} />
         </LineChart>
       </ResponsiveContainer>
     </div>

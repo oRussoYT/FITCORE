@@ -86,7 +86,7 @@ export default function SignupPage() {
         />
         <Input label="Confirmar senha" type="password" autoComplete="new-password" error={errors.confirm?.message} {...register("confirm")} />
         <label className="flex items-start gap-3 text-[13px] leading-relaxed text-mist">
-          <input type="checkbox" className="mt-1 size-4 accent-[#c8f03c]" {...register("terms")} />
+          <input type="checkbox" className="mt-1 size-4 accent-[#ccff00]" {...register("terms")} />
           <span>
             Li e aceito a{" "}
             <Link href="/privacidade" target="_blank" className="text-bone underline underline-offset-2">

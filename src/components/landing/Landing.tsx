@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { animate, motion, useInView, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { animate, motion, useInView, useScroll, useTransform } from "framer-motion";
 import { ArrowUpRight, Quote, Star } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { brand } from "@/config/brand";
@@ -49,7 +49,7 @@ function Shot({ id, alt, w, className }: { id: string; alt: string; w: number; c
 function CountUp({ to }: { to: number }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true });
-  const reduce = useReducedMotion();
+  const reduce = false as boolean;
   useEffect(() => {
     const el = ref.current;
     if (!el || !inView) return;
@@ -113,7 +113,7 @@ function Nav({ loggedIn }: { loggedIn: boolean }) {
 
 function Hero({ loggedIn }: { loggedIn: boolean }) {
   const ref = useRef<HTMLElement>(null);
-  const reduce = useReducedMotion();
+  const reduce = false as boolean;
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const scale = useTransform(scrollYProgress, [0, 1], [1.05, 1.3]);
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
@@ -223,7 +223,7 @@ const GALLERY = [
 
 function Gallery() {
   const ref = useRef<HTMLElement>(null);
-  const reduce = useReducedMotion();
+  const reduce = false as boolean;
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const x = useTransform(scrollYProgress, [0, 1], ["0%", "-62%"]);
 

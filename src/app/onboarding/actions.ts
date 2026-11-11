@@ -15,6 +15,17 @@ import {
   physicalSchema,
 } from "@/lib/validation/onboarding";
 
+/** Nunca deixa o formulário travado: qualquer falha vira mensagem na tela. */
+async function guard(fn: () => Promise<ActionResult>): Promise<ActionResult> {
+  try {
+    return await fn();
+  } catch (e) {
+    if (e && typeof e === "object" && "digest" in e && String((e as { digest: unknown }).digest).startsWith("NEXT_REDIRECT")) throw e;
+    console.error("[onboarding]", e);
+    return { ok: false, error: "Não conseguimos salvar agora. Tente de novo em instantes." };
+  }
+}
+
 async function advance(step: number, patch: Record<string, unknown>): Promise<ActionResult> {
   const ctx = await getAuthContext();
   const nextStep = Math.max(ctx.profile.onboarding_step, step);
@@ -24,33 +35,42 @@ async function advance(step: number, patch: Record<string, unknown>): Promise<Ac
 }
 
 export async function savePersonal(input: unknown): Promise<ActionResult> {
+  return guard(async () => {
   const parsed = personalSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "Revise os campos destacados.", fieldErrors: zodFieldErrors(parsed.error) };
   const ctx = await getAuthContext();
   await ensureStudent(ctx);
   return advance(1, { full_name: parsed.data.fullName, birth_date: parsed.data.birthDate, sex: parsed.data.sex });
+  });
 }
 
 export async function saveGoal(input: unknown): Promise<ActionResult> {
+  return guard(async () => {
   const parsed = goalSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "Escolha um objetivo.", fieldErrors: zodFieldErrors(parsed.error) };
   return advance(2, { primary_goal: parsed.data.primaryGoal });
+  });
 }
 
 export async function saveExperience(input: unknown): Promise<ActionResult> {
+  return guard(async () => {
   const parsed = experienceSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "Escolha seu nível.", fieldErrors: zodFieldErrors(parsed.error) };
   return advance(3, { experience_level: parsed.data.experienceLevel });
+  });
 }
 
 export async function saveAvailability(input: unknown): Promise<ActionResult> {
+  return guard(async () => {
   const parsed = availabilitySchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "Revise os campos destacados.", fieldErrors: zodFieldErrors(parsed.error) };
   return advance(4, { weekly_availability: parsed.data.weeklyAvailability, session_minutes: parsed.data.sessionMinutes });
+  });
 }
 
 /** Dados físicos iniciais: altura vai para o perfil, peso cria a avaliação inicial. */
 export async function savePhysical(input: unknown): Promise<ActionResult> {
+  return guard(async () => {
   const parsed = physicalSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "Revise os campos destacados.", fieldErrors: zodFieldErrors(parsed.error) };
   const ctx = await getAuthContext();
@@ -86,9 +106,11 @@ export async function savePhysical(input: unknown): Promise<ActionResult> {
     height_cm: parsed.data.heightCm,
     consent_health_data_at: ctx.profile.consent_health_data_at ?? now,
   });
+  });
 }
 
 export async function saveFood(input: unknown): Promise<ActionResult> {
+  return guard(async () => {
   const parsed = foodSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "Revise os campos destacados.", fieldErrors: zodFieldErrors(parsed.error) };
   return advance(6, {
@@ -98,10 +120,12 @@ export async function saveFood(input: unknown): Promise<ActionResult> {
       meals_per_day: parsed.data.mealsPerDay ?? null,
     },
   });
+  });
 }
 
 /** Último passo: medidas opcionais na avaliação inicial e conclusão do onboarding. */
 export async function saveFirstAssessment(input: unknown): Promise<ActionResult> {
+  return guard(async () => {
   const parsed = firstAssessmentSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "Revise os campos destacados.", fieldErrors: zodFieldErrors(parsed.error) };
   const ctx = await getAuthContext();
@@ -150,4 +174,5 @@ export async function saveFirstAssessment(input: unknown): Promise<ActionResult>
 
   revalidatePath("/", "layout");
   return { ok: true };
+  });
 }

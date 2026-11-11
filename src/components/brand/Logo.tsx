@@ -8,7 +8,7 @@ export function LogoMark({ className }: { className?: string }) {
       <rect width="32" height="32" rx="9" fill="#1a1e21" />
       <rect x="0.5" y="0.5" width="31" height="31" rx="8.5" fill="none" stroke="#2c3236" />
       <path d="M22.5 10.2A9 9 0 1 0 25 16" fill="none" stroke="#eceee8" strokeWidth="2.6" strokeLinecap="round" />
-      <circle cx="25" cy="16" r="2.6" fill="#c8f03c" />
+      <circle cx="25" cy="16" r="2.6" fill="#ccff00" />
     </svg>
   );
 }

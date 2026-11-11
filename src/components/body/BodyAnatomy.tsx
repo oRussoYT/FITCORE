@@ -80,7 +80,7 @@ export function BodyAnatomy({ intensityFor, selected, onSelect, labelFor }: Body
       {/* Contorno do grupo selecionado */}
       <g pointerEvents="none" filter="url(#sel-glow)">
         {REGIONS.filter((r) => r.group === selected).map((r, i) => (
-          <path key={i} d={toPath(r.pts)} fill="none" stroke="#c8f03c" strokeWidth={5} strokeLinejoin="round" opacity={0.9} />
+          <path key={i} d={toPath(r.pts)} fill="none" stroke="#ccff00" strokeWidth={5} strokeLinejoin="round" opacity={0.9} />
         ))}
       </g>
 

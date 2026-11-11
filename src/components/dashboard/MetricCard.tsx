@@ -63,7 +63,7 @@ export function MetricCard({ indicator, className }: { indicator: Indicator; cla
                     strokeWidth={1.6}
                     fill={`url(#g-${indicator.key})`}
                     dot={false}
-                    activeDot={{ r: 3.5, fill: "#c8f03c", stroke: "none" }}
+                    activeDot={{ r: 3.5, fill: "#ccff00", stroke: "none" }}
                     animationDuration={900}
                   />
                 </AreaChart>

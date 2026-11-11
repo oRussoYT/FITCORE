@@ -35,7 +35,7 @@ export default async function EvolutionPage({ searchParams }: { searchParams: Pr
         </div>
         <Link
           href="/evolucao/nova"
-          className="inline-flex h-10 items-center gap-1.5 rounded-[var(--radius-control)] bg-lime px-4 text-sm font-semibold text-ink transition-colors hover:bg-[#d6f760]"
+          className="inline-flex h-10 items-center gap-1.5 rounded-[var(--radius-control)] bg-lime px-4 text-sm font-semibold text-ink transition-colors hover:bg-[#ddff4d]"
         >
           <Plus className="size-4" strokeWidth={2.5} /> Nova avaliação
         </Link>
