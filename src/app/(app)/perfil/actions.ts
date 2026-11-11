@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getAuthContext } from "@/lib/db/context";
 import type { ActionResult } from "@/lib/validation/common";
+import { profileSchema } from "@/lib/validation/profile";
 
 /** Apaga avaliações, medidas, relatórios e fotos do próprio aluno (direito de exclusão — LGPD). */
 export async function deleteBodyData(confirmation: string): Promise<ActionResult> {
@@ -57,5 +58,39 @@ export async function saveReview(input: unknown): Promise<ActionResult> {
   );
   if (error) return { ok: false, error: "Não foi possível enviar sua avaliação." };
   revalidatePath("/perfil");
+  return { ok: true };
+}
+
+export async function updateProfile(input: unknown): Promise<ActionResult> {
+
+  const parsed = profileSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Revise os campos." };
+  const ctx = await getAuthContext();
+  const d = parsed.data;
+  const { error } = await ctx.supabase
+    .from("profiles")
+    .update({
+      full_name: d.fullName,
+      height_cm: d.heightCm ?? null,
+      primary_goal: d.primaryGoal,
+      experience_level: d.experienceLevel,
+      weekly_availability: d.weeklyAvailability ?? null,
+      session_minutes: d.sessionMinutes ?? null,
+    })
+    .eq("id", ctx.userId);
+  if (error) return { ok: false, error: "Não foi possível salvar." };
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+/** Troca a foto de perfil (já enviada à pasta privada do próprio usuário). */
+export async function setAvatar(path: string | null): Promise<ActionResult> {
+  const ctx = await getAuthContext();
+  if (path !== null && !new RegExp(`^${ctx.userId}/[0-9a-f-]{36}\\.jpg$`).test(path)) return { ok: false, error: "Foto inválida." };
+  const old = ctx.profile.avatar_path;
+  const { error } = await ctx.supabase.from("profiles").update({ avatar_path: path }).eq("id", ctx.userId);
+  if (error) return { ok: false, error: "Não foi possível salvar a foto." };
+  if (old && old !== path) await ctx.supabase.storage.from("avatars").remove([old]);
+  revalidatePath("/", "layout");
   return { ok: true };
 }
