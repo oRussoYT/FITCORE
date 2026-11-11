@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Camera, Plus } from "lucide-react";
+import { aiConfigured } from "@/lib/ai/provider";
+import { ReportButton } from "./ReportButton";
+import { ReportView } from "./ReportView";
 import { Notice } from "@/components/ui/Feedback";
 import { ensureStudent, getAuthContext } from "@/lib/db/context";
 import { listAssessments } from "@/lib/db/assessments";
@@ -25,6 +28,15 @@ export default async function EvolutionPage({ searchParams }: { searchParams: Pr
     3,
   );
   const desc = [...assessments].reverse();
+  const { data: reportRows } = await ctx.supabase
+    .from("body_analysis_reports")
+    .select("id, content, created_at")
+    .eq("student_id", student.id)
+    .eq("kind", "assessment")
+    .order("created_at", { ascending: false })
+    .limit(3);
+  const reports = (reportRows ?? []) as Array<{ id: string; content: Record<string, unknown>; created_at: string }>;
+  const reportReason = assessments.length === 0 ? "Registre uma avaliação primeiro." : !aiConfigured() ? "A IA será ativada em breve pelo administrador do sistema." : undefined;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:py-10">
@@ -33,13 +45,36 @@ export default async function EvolutionPage({ searchParams }: { searchParams: Pr
           <h1 className="type-display text-[32px] sm:text-[38px]">Minha evolução</h1>
           <p className="mt-2 text-mist">AI Body Analysis · histórico de todas as avaliações</p>
         </div>
-        <Link
-          href="/evolucao/nova"
-          className="inline-flex h-10 items-center gap-1.5 rounded-[var(--radius-control)] bg-lime px-4 text-sm font-semibold text-ink transition-colors hover:bg-[#ddff4d]"
-        >
-          <Plus className="size-4" strokeWidth={2.5} /> Nova avaliação
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="/evolucao/fotos"
+            className="inline-flex h-10 items-center gap-1.5 rounded-[var(--radius-control)] border border-line bg-raised px-4 text-sm font-semibold hover:border-line-strong"
+          >
+            <Camera className="size-4" /> Avaliação por foto (IA)
+          </Link>
+          <Link
+            href="/evolucao/nova"
+            className="inline-flex h-10 items-center gap-1.5 rounded-[var(--radius-control)] bg-lime px-4 text-sm font-semibold text-ink transition-colors hover:bg-[#ddff4d]"
+          >
+            <Plus className="size-4" strokeWidth={2.5} /> Nova avaliação
+          </Link>
+        </div>
       </div>
+
+      <section className="panel mt-6 p-5">
+        <h2 className="text-[15px] font-semibold">Relatório de evolução — AI Body Analysis</h2>
+        <p className="mt-1 text-[13px] text-mist">A IA lê só os dados que você registrou e explica sua evolução.</p>
+        <div className="mt-4">
+          <ReportButton enabled={!reportReason} reason={reportReason} />
+        </div>
+        {reports.length > 0 && (
+          <div className="mt-6 space-y-4">
+            {reports.map((r, i) => (
+              <ReportView key={r.id} content={r.content} createdAt={r.created_at} highlight={i === 0} kind="assessment" />
+            ))}
+          </div>
+        )}
+      </section>
 
       <div className="mt-6 space-y-3">
         {params.salva && <Notice tone="success">Avaliação salva.</Notice>}

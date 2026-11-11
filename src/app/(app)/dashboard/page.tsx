@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Camera, Plus } from "lucide-react";
 import { BodyMapPanel } from "@/components/dashboard/BodyMapPanel";
 import { CoachCard } from "@/components/dashboard/CoachCard";
 import { InvitesBanner } from "@/components/dashboard/InvitesBanner";
@@ -53,12 +53,20 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         <div className="min-w-0 space-y-6">
           <div className="flex items-end justify-between gap-4">
             <h2 className="text-[17px] font-semibold">Indicadores</h2>
+            <div className="flex flex-wrap gap-2">
+            <Link
+              href="/evolucao/fotos"
+              className="inline-flex h-9 items-center gap-1.5 rounded-[var(--radius-control)] border border-line bg-raised px-3.5 text-[13px] font-semibold hover:border-line-strong"
+            >
+              <Camera className="size-4" /> Avaliação por foto (IA)
+            </Link>
             <Link
               href="/evolucao/nova"
               className="inline-flex h-9 items-center gap-1.5 rounded-[var(--radius-control)] bg-lime px-3.5 text-[13px] font-semibold text-ink transition-colors hover:bg-[#ddff4d]"
             >
               <Plus className="size-4" strokeWidth={2.5} /> Nova avaliação
             </Link>
+            </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
             {data.indicators.map((ind) => (
