@@ -5,6 +5,8 @@ import { ensureStudent, getAuthContext } from "@/lib/db/context";
 import { formatNumber } from "@/lib/domain/metrics";
 import { ExerciseForm, NewPlanForm } from "../personal/[id]/TrainerForms";
 import { StartButton } from "./StartButton";
+import { AiWorkoutButton } from "./AiWorkoutButton";
+import { aiConfigured } from "@/lib/ai/provider";
 
 export const metadata: Metadata = { title: "Treinos" };
 
@@ -57,6 +59,12 @@ export default async function WorkoutsPage({ searchParams }: { searchParams: Pro
     <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:py-10">
       <h1 className="type-display text-[32px] sm:text-[38px]">Treinos</h1>
       <p className="mt-2 text-mist">{hasTrainer ? "Treinos montados pelo seu personal." : "Monte seus treinos ou peça para sua academia vincular um personal."}</p>
+
+      {!hasTrainer && (
+        <div className="mt-6">
+          <AiWorkoutButton enabled={aiConfigured()} reason={aiConfigured() ? undefined : "A IA será ativada em breve pelo administrador do sistema."} hasPlans={plans.length > 0} />
+        </div>
+      )}
 
       <div className="mt-6 space-y-3">
         {params.concluido && <Notice tone="success" title="Treino salvo">Ele já aparece na sua frequência e no mapa muscular.</Notice>}
