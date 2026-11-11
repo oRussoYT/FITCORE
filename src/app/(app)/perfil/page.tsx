@@ -4,12 +4,14 @@ import { getAuthContext } from "@/lib/db/context";
 import { GOAL_LABELS, LEVEL_LABELS } from "@/lib/domain/labels";
 import { signOut } from "../actions";
 import { PrivacyActions } from "./PrivacyActions";
+import { ReviewForm } from "./ReviewForm";
 
 export const metadata: Metadata = { title: "Perfil" };
 
 export default async function ProfilePage() {
   const ctx = await getAuthContext();
   const p = ctx.profile;
+  const review = await ctx.supabase.from("platform_reviews").select("rating, body, display_name, status").eq("user_id", ctx.userId).maybeSingle();
   const pending = await ctx.supabase.from("data_requests").select("id, created_at").eq("kind", "delete").eq("status", "pending").maybeSingle();
 
   const rows: Array<[string, string]> = [
@@ -37,6 +39,8 @@ export default async function ProfilePage() {
           ))}
         </dl>
       </section>
+
+      <ReviewForm existing={review.data ?? null} defaultName={(p.full_name ?? "").split(" ")[0] ?? ""} />
 
       <section className="panel mt-6 p-5">
         <h2 className="text-[15px] font-semibold">Privacidade e consentimentos</h2>

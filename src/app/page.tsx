@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Landing } from "@/components/landing/Landing";
+import { Landing, type PublicReview } from "@/components/landing/Landing";
 import { brand } from "@/config/brand";
 import { isSupabaseConfigured } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
@@ -11,10 +11,12 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   let loggedIn = false;
+  let reviews: PublicReview[] = [];
   if (isSupabaseConfigured) {
     const supabase = await createClient();
-    const { data } = await supabase.auth.getUser();
-    loggedIn = Boolean(data.user);
+    const [{ data: auth }, { data }] = await Promise.all([supabase.auth.getUser(), supabase.rpc("public_reviews", { p_limit: 12 })]);
+    loggedIn = Boolean(auth.user);
+    reviews = (data as PublicReview[] | null) ?? [];
   }
-  return <Landing loggedIn={loggedIn} />;
+  return <Landing loggedIn={loggedIn} reviews={reviews} />;
 }
