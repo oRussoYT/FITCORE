@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { RequestActions } from "./RequestActions";
+import { ReviewModeration } from "./ReviewModeration";
 import { SignupsChart } from "./SignupsChart";
 
 type Overview = {
@@ -36,12 +37,15 @@ const fmtDate = (d: string | null) => (d ? new Date(d).toLocaleDateString("pt-BR
 export default async function AdminHome({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const { q } = await searchParams;
   const supabase = await createClient();
-  const [ov, users, reqs, audit] = await Promise.all([
+  const [ov, users, reqs, audit, reviews] = await Promise.all([
     supabase.rpc("admin_overview"),
     supabase.rpc("admin_list_users", { p_search: q?.slice(0, 80) ?? null, p_limit: 50 }),
     supabase.rpc("admin_list_data_requests"),
     supabase.rpc("admin_recent_audit"),
+    supabase.rpc("admin_list_reviews"),
   ]);
+  type ReviewRow = { id: string; email: string | null; rating: number; body: string; display_name: string; status: string; created_at: string };
+  const reviewRows = (reviews.data as ReviewRow[] | null) ?? [];
   if (ov.error || !ov.data) notFound();
 
   const o = ov.data as Overview;
@@ -100,6 +104,32 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
           </ul>
         ) : (
           <p className="mt-3 text-fog">Nenhum pedido.</p>
+        )}
+      </section>
+
+      <section>
+        <h2 className="text-[17px] font-semibold">Avaliações para a página inicial</h2>
+        {reviewRows.length === 0 ? (
+          <p className="mt-3 text-fog">Nenhuma avaliação enviada ainda.</p>
+        ) : (
+          <ul className="mt-4 divide-y divide-line rounded-2xl border border-line">
+            {reviewRows.map((r) => (
+              <li key={r.id} className="flex flex-wrap items-start justify-between gap-3 px-4 py-3 text-[14px]">
+                <div className="max-w-xl">
+                  <p className="font-medium">
+                    {"★".repeat(r.rating)}
+                    <span className="text-line-strong">{"★".repeat(5 - r.rating)}</span> · {r.display_name}{" "}
+                    <span className="text-fog">({r.email ?? "usuário removido"})</span>
+                  </p>
+                  <p className="mt-1 text-mist">{r.body}</p>
+                  <p className="mt-1 text-[12px] text-fog">
+                    {fmtDate(r.created_at)} · {r.status === "approved" ? "publicada" : r.status === "rejected" ? "recusada" : "pendente"}
+                  </p>
+                </div>
+                <ReviewModeration id={r.id} status={r.status} />
+              </li>
+            ))}
+          </ul>
         )}
       </section>
 

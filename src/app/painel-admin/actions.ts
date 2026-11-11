@@ -12,3 +12,13 @@ export async function setDataRequestStatus(id: string, status: "processing" | "d
   revalidatePath("/painel-admin");
   return { ok: true as const };
 }
+
+export async function moderateReview(id: string, status: "approved" | "rejected") {
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return { ok: false as const, error: "Avaliação inválida." };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("admin_moderate_review", { p_id: id, p_status: status });
+  if (error) return { ok: false as const, error: "Ação recusada." };
+  revalidatePath("/painel-admin");
+  revalidatePath("/");
+  return { ok: true as const };
+}
