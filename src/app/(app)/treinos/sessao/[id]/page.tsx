@@ -23,7 +23,7 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
   const [{ data: items }, { data: logs }] = await Promise.all([
     ctx.supabase
       .from("workout_exercises")
-      .select("id, position, sets, reps, rest_seconds, target_load_kg, exercise_id, exercises(name, instructions, media_url, primary_muscle, secondary_muscles)")
+      .select("id, position, sets, reps, rest_seconds, target_load_kg, exercise_id, exercises(name, instructions, media_url, media_credit, primary_muscle, secondary_muscles)")
       .eq("plan_id", session.plan_id)
       .order("position"),
     ctx.supabase.from("workout_logs").select("id, workout_exercise_id, reps, load_kg, completed_at").eq("session_id", id).order("completed_at"),
@@ -36,7 +36,7 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
     rest_seconds: number;
     target_load_kg: number | null;
     exercise_id: string;
-    exercises: { name: string; instructions: string | null; media_url: string | null; primary_muscle: string; secondary_muscles: string[] | null } | null;
+    exercises: { name: string; instructions: string | null; media_url: string | null; media_credit: string | null; primary_muscle: string; secondary_muscles: string[] | null } | null;
   };
   const list = (items ?? []) as unknown as Item[];
   if (list.length === 0) redirect("/treinos?vazio=1");
@@ -60,6 +60,7 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
     name: i.exercises?.name ?? "Exercício",
     instructions: i.exercises?.instructions ?? null,
     mediaUrl: i.exercises?.media_url ?? null,
+    mediaCredit: i.exercises?.media_credit ?? null,
     primaryMuscle: i.exercises?.primary_muscle ?? "abs",
     secondaryMuscles: i.exercises?.secondary_muscles ?? [],
     sets: i.sets,

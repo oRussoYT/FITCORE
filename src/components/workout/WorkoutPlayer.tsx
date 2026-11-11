@@ -8,6 +8,7 @@ import { BodyAnatomy } from "@/components/body/BodyAnatomy";
 import { abandonSession, finishSession, logSet, undoSet } from "@/app/(app)/treinos/actions";
 import { cn } from "@/lib/cn";
 import { formatNumber } from "@/lib/domain/metrics";
+import { youtubeEmbed, youtubeId } from "@/lib/media";
 
 export type PlayerExercise = {
   workoutExerciseId: string;
@@ -15,6 +16,7 @@ export type PlayerExercise = {
   name: string;
   instructions: string | null;
   mediaUrl: string | null;
+  mediaCredit?: string | null;
   primaryMuscle: string;
   secondaryMuscles: string[];
   sets: number;
@@ -88,6 +90,7 @@ export function WorkoutPlayer({
   const [paused, setPaused] = useState(false);
   const [pausedTotal, setPausedTotal] = useState(0);
   const [showHow, setShowHow] = useState(false);
+  const [view, setView] = useState<"video" | "muscles">("video");
   const [confirmExit, setConfirmExit] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -312,9 +315,39 @@ export function WorkoutPlayer({
             </motion.div>
           ) : ex ? (
             <motion.div key={`ex-${idx}`} initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.4, ease }} className="flex flex-1 flex-col">
+              {ex.mediaUrl && (
+                <div role="tablist" aria-label="Como fazer" className="mx-auto mt-3 flex rounded-full bg-raised p-1">
+                  {(["video", "muscles"] as const).map((v) => (
+                    <button
+                      key={v}
+                      role="tab"
+                      type="button"
+                      aria-selected={view === v}
+                      onClick={() => setView(v)}
+                      className={cn("h-8 rounded-full px-4 text-[13px] font-semibold", view === v ? "bg-bone text-ink" : "text-mist")}
+                    >
+                      {v === "video" ? "Como fazer" : "Músculos"}
+                    </button>
+                  ))}
+                </div>
+              )}
               <div className="flex min-h-0 flex-1 items-center justify-center py-4">
-                {ex.mediaUrl ? (
-                  /\.(mp4|webm|mov)(\?|$)/i.test(ex.mediaUrl) ? (
+                {ex.mediaUrl && view === "video" ? (
+                  youtubeId(ex.mediaUrl) ? (
+                    <figure className="w-full">
+                      <div className="relative mx-auto aspect-video w-full overflow-hidden rounded-2xl bg-black">
+                        <iframe
+                          key={ex.mediaUrl}
+                          src={youtubeEmbed(youtubeId(ex.mediaUrl)!, { autoplay: !paused })}
+                          title={`Como fazer: ${ex.name}`}
+                          allow="autoplay; encrypted-media; picture-in-picture"
+                          referrerPolicy="strict-origin-when-cross-origin"
+                          className="absolute inset-0 h-full w-full"
+                        />
+                      </div>
+                      {ex.mediaCredit && <figcaption className="mt-2 text-center text-[11.5px] text-fog">Vídeo: {ex.mediaCredit} · YouTube</figcaption>}
+                    </figure>
+                  ) : /\.(mp4|webm|mov)(\?|$)/i.test(ex.mediaUrl) ? (
                     <video src={ex.mediaUrl} autoPlay loop muted playsInline className="max-h-full w-full rounded-2xl object-contain" />
                   ) : (
                     // eslint-disable-next-line @next/next/no-img-element
