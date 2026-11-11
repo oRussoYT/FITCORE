@@ -313,7 +313,7 @@ function Reviews({ reviews, loggedIn }: { reviews: PublicReview[]; loggedIn: boo
                   semanas e conte como foi.
                 </p>
                 <Link
-                  href={loggedIn ? "/perfil" : "/cadastro"}
+                  href={loggedIn ? "/avaliar" : "/cadastro"}
                   className="mt-8 inline-flex h-12 items-center rounded-full bg-lime px-6 font-bold text-ink transition-transform hover:scale-[1.03]"
                 >
                   {loggedIn ? "Avaliar agora" : "Criar conta"}
@@ -372,11 +372,12 @@ function Nutrition() {
   );
 }
 
-function Gyms() {
+function Gyms({ loggedIn }: { loggedIn: boolean }) {
+  const go = (path: string) => (loggedIn ? path : `/cadastro?next=${path}`);
   const cards = [
-    ["Aluno", "Painel com evolução real, treino guiado e histórico que não se perde."],
-    ["Personal", "Vê só os alunos vinculados, cria treinos, acompanha frequência e deixa observações."],
-    ["Academia", "Alunos ativos, frequência, planos e receita — com permissões aplicadas no banco de dados."],
+    ["Aluno", "Painel com evolução real, treino guiado e histórico que não se perde.", go("/dashboard"), "Começar a treinar"],
+    ["Personal", "Vê só os alunos vinculados, cria treinos, acompanha frequência e deixa observações.", go("/personal"), "Área do personal"],
+    ["Academia", "Alunos ativos, frequência, planos e receita — com permissões aplicadas no banco de dados.", go("/academia"), "Cadastrar minha academia"],
   ];
   return (
     <section id="academias" className="relative overflow-hidden bg-ink">
@@ -389,15 +390,20 @@ function Gyms() {
           <h2 className="type-metric max-w-4xl text-[clamp(56px,8vw,130px)] leading-[0.88]">Feito para a academia inteira.</h2>
         </Reveal>
         <div className="mt-14 grid gap-5 md:grid-cols-3">
-          {cards.map(([t, d], i) => (
+          {cards.map(([t, d, href, cta], i) => (
             <Reveal key={t} delay={i * 0.08}>
-              <div
-                className="group h-full rounded-[28px] border border-white/10 bg-ink/60 p-8 backdrop-blur transition-colors duration-300 hover:border-lime hover:bg-lime hover:text-ink"
+              <Link
+                href={href!}
+                className="group flex h-full flex-col rounded-[28px] border border-white/10 bg-ink/60 p-8 backdrop-blur transition-colors duration-300 hover:border-lime hover:bg-lime hover:text-ink"
                 data-cursor
               >
                 <h3 className="type-display text-[34px]">{t}</h3>
-                <p className="mt-3 leading-relaxed text-mist transition-colors group-hover:text-ink/80">{d}</p>
-              </div>
+                <p className="mt-3 flex-1 leading-relaxed text-mist transition-colors group-hover:text-ink/80">{d}</p>
+                <span className="mt-8 inline-flex items-center gap-2 font-semibold">
+                  {cta}
+                  <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:rotate-45" />
+                </span>
+              </Link>
             </Reveal>
           ))}
         </div>
@@ -446,7 +452,7 @@ export function Landing({ loggedIn, reviews }: { loggedIn: boolean; reviews: Pub
       <HowItWorks />
       <Reviews reviews={reviews} loggedIn={loggedIn} />
       <Nutrition />
-      <Gyms />
+      <Gyms loggedIn={loggedIn} />
       <FinalCta loggedIn={loggedIn} />
       <footer className="bg-ink">
         <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-4 px-5 py-8 text-[13px] text-fog sm:px-10">

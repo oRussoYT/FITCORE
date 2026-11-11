@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Award, Download, Flame, Lock, Star } from "lucide-react";
+import { Award, Building2, Download, Flame, Lock, Star, Users } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { ensureStudent, getAuthContext } from "@/lib/db/context";
 import { signedAvatarUrl } from "@/lib/db/dashboard";
@@ -123,6 +123,28 @@ export default async function ProfilePage() {
         </span>
         <span className="text-[13px] font-semibold text-lime">Avaliar</span>
       </Link>
+
+      {!(ctx.isAdmin && ctx.isTrainer) && (
+        <section className="mt-6">
+          <h2 className="text-[15px] font-semibold text-mist">Para profissionais</h2>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            {!ctx.isAdmin && (
+              <Link href="/academia" className="group rounded-[24px] border border-line bg-surface p-5 transition-colors hover:border-lime/50">
+                <Building2 className="size-6 text-lime" />
+                <p className="mt-3 font-semibold">Tenho uma academia</p>
+                <p className="mt-1 text-[13px] leading-relaxed text-mist">Cadastre sua academia e convide alunos e personal trainers.</p>
+              </Link>
+            )}
+            {!ctx.isTrainer && (
+              <Link href="/personal" className="group rounded-[24px] border border-line bg-surface p-5 transition-colors hover:border-lime/50">
+                <Users className="size-6 text-lime" />
+                <p className="mt-3 font-semibold">Sou personal trainer</p>
+                <p className="mt-1 text-[13px] leading-relaxed text-mist">Veja como entrar na equipe de uma academia e acompanhar alunos.</p>
+              </Link>
+            )}
+          </div>
+        </section>
+      )}
 
       <section className="panel mt-6 p-5">
         <h2 className="text-[15px] font-semibold">Privacidade e consentimentos</h2>

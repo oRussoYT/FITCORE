@@ -2,12 +2,12 @@ import "server-only";
 import type { AuthContext } from "@/lib/db/context";
 import type { GymPayment, GymPlan, GymSession, GymStudent, GymSubscription } from "@/lib/domain/gym";
 
-export type Gym = { id: string; name: string; slug: string };
+export type Gym = { id: string; name: string; slug: string; suspended_at: string | null; suspended_reason: string | null };
 
 export async function getAdminGym(ctx: AuthContext): Promise<Gym | null> {
   const gymId = ctx.memberships.find((m) => m.role === "admin" && m.status === "active")?.gym_id;
   if (!gymId) return null;
-  const { data } = await ctx.supabase.from("gyms").select("id, name, slug").eq("id", gymId).maybeSingle();
+  const { data } = await ctx.supabase.from("gyms").select("id, name, slug, suspended_at, suspended_reason").eq("id", gymId).maybeSingle();
   return (data as Gym | null) ?? null;
 }
 
