@@ -15,12 +15,35 @@ export default async function TrainerHome() {
   const ctx = await getAuthContext();
   const trainer = await getMyTrainer(ctx);
   if (!trainer) {
+    const steps = [
+      ["Peça o convite", `O dono da academia convida você na aba “Personal trainers” do painel dele, usando o e-mail ${ctx.email ?? "da sua conta"}.`],
+      ["Aceite no Início", "O convite aparece na sua tela inicial. Um toque em “Aceitar” e você entra na equipe."],
+      ["Acompanhe seus alunos", "Os alunos vinculados a você aparecem aqui, com frequência, treinos e observações."],
+    ];
     return (
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-        <h1 className="type-display text-[34px]">Painel do personal</h1>
-        <p className="mt-3 leading-relaxed text-mist">
-          Este painel aparece para personal trainers convidados por uma academia. Peça ao administrador da sua academia para
-          te convidar pelo seu e-mail de login.
+        <h1 className="type-metric text-[clamp(44px,7vw,72px)] leading-[0.9]">Área do personal</h1>
+        <p className="mt-4 max-w-xl leading-relaxed text-mist">
+          Personal trainers entram pela academia onde trabalham. É assim que a gente garante que você só vê alunos que
+          realmente acompanha.
+        </p>
+        <ol className="mt-8 space-y-3">
+          {steps.map(([t, d], i) => (
+            <li key={t} className="flex gap-4 rounded-[24px] border border-line bg-surface p-5">
+              <span className="type-metric flex size-10 shrink-0 items-center justify-center rounded-full bg-lime text-[20px] text-ink">{i + 1}</span>
+              <span>
+                <span className="block font-semibold">{t}</span>
+                <span className="mt-1 block text-[14px] leading-relaxed text-mist">{d}</span>
+              </span>
+            </li>
+          ))}
+        </ol>
+        <p className="mt-8 text-[14px] text-mist">
+          Você tem a própria academia?{" "}
+          <Link href="/academia" className="font-semibold text-lime underline-offset-4 hover:underline">
+            Cadastre aqui
+          </Link>
+          .
         </p>
       </div>
     );

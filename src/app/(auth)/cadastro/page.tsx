@@ -25,12 +25,15 @@ export default function SignupPage() {
 
   async function onSubmit(values: SignupInput) {
     setError(null);
+    // Quem chega pelos botões "Academia" / "Personal" da página inicial vai direto para a área certa.
+    const wanted = new URLSearchParams(window.location.search).get("next");
+    const next = wanted === "/academia" || wanted === "/personal" ? wanted : "/onboarding";
     const { data, error: err } = await getBrowserClient().auth.signUp({
       email: values.email,
       password: values.password,
       options: {
         data: { full_name: values.fullName },
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=/onboarding`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=${next}`,
       },
     });
     if (err) {
@@ -39,7 +42,7 @@ export default function SignupPage() {
     }
     // Com confirmação de e-mail desativada o Supabase já devolve a sessão.
     if (data.session) {
-      router.replace("/onboarding");
+      router.replace(next);
       router.refresh();
       return;
     }

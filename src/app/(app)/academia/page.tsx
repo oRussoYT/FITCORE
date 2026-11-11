@@ -40,6 +40,23 @@ export default async function GymPage({ searchParams }: { searchParams: Promise<
     );
   }
 
+  if (gym.suspended_at) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+        <p className="text-[13px] text-fog">Painel da academia</p>
+        <h1 className="type-display mt-1 text-[34px]">{gym.name}</h1>
+        <div className="mt-8 rounded-[28px] border border-coral/40 bg-coral/10 p-6">
+          <p className="text-[17px] font-semibold text-coral">Academia suspensa</p>
+          <p className="mt-2 leading-relaxed text-mist">
+            A gestão desta academia foi pausada pela equipe do FITCORE em {new Date(gym.suspended_at).toLocaleDateString("pt-BR")}.
+            {gym.suspended_reason && <> Motivo: “{gym.suspended_reason}”.</>} Os alunos continuam com acesso aos próprios dados.
+            Fale com o suporte para reativar.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const tab = TABS.some(([k]) => k === params.aba) ? params.aba! : "visao";
   const days = [7, 30, 90].includes(Number(params.dias)) ? Number(params.dias) : 30;
   const data = await loadGym(ctx, gym.id, days);

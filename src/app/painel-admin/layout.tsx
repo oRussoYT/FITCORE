@@ -32,10 +32,19 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="min-h-dvh bg-ink">
-      <header className="border-b border-line">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
+      <header className="sticky top-0 z-30 border-b border-line bg-ink/80 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-4 sm:px-6 lg:px-10">
           <Logo />
-          <span className="rounded-full border border-coral/40 px-3 py-1 text-[12px] font-semibold text-coral">Área restrita</span>
+          <div className="flex items-center gap-3">
+            <span className="hidden items-center gap-2 text-[12.5px] text-mist sm:flex">
+              <span className="relative flex size-2">
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-lime opacity-60" />
+                <span className="relative inline-flex size-2 rounded-full bg-lime" />
+              </span>
+              {user.email}
+            </span>
+            <span className="rounded-full border border-coral/40 px-3 py-1 text-[12px] font-semibold text-coral">Área restrita</span>
+          </div>
         </div>
       </header>
       {verified ? children : <MfaGate hasFactor={aal?.nextLevel === "aal2"} />}
