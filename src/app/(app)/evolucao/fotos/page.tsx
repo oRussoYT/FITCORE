@@ -28,7 +28,7 @@ export default async function PhotosPage() {
   const signed = photos.length
     ? ((await ctx.supabase.storage.from("body-photos").createSignedUrls(photos.map((p) => p.storage_path), 600)).data ?? [])
     : [];
-  const urlOf = new Map(signed.filter((s) => s.signedUrl).map((s) => [s.path, s.signedUrl]));
+  const urlOf = new Map(signed.filter((s) => s.signedUrl && s.path).map((s) => [s.path as string, s.signedUrl as string]));
 
   const byDate = new Map<string, typeof photos>();
   for (const p of photos) {
@@ -117,7 +117,7 @@ export default async function PhotosPage() {
                     <li key={p.id} className="relative overflow-hidden rounded-xl border border-line">
                       {urlOf.get(p.storage_path) ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={urlOf.get(p.storage_path)} alt={POSE_LABEL[p.pose]} className="aspect-[3/4] w-full object-cover" />
+                        <img src={urlOf.get(p.storage_path) ?? undefined} alt={POSE_LABEL[p.pose]} className="aspect-[3/4] w-full object-cover" />
                       ) : (
                         <div className="aspect-[3/4] w-full bg-graphite" />
                       )}
