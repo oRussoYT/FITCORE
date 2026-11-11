@@ -52,7 +52,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             <h2 className="text-[17px] font-semibold">Indicadores</h2>
             <Link
               href="/evolucao/nova"
-              className="inline-flex h-9 items-center gap-1.5 rounded-[var(--radius-control)] bg-lime px-3.5 text-[13px] font-semibold text-ink transition-colors hover:bg-[#d6f760]"
+              className="inline-flex h-9 items-center gap-1.5 rounded-[var(--radius-control)] bg-lime px-3.5 text-[13px] font-semibold text-ink transition-colors hover:bg-[#ddff4d]"
             >
               <Plus className="size-4" strokeWidth={2.5} /> Nova avaliação
             </Link>

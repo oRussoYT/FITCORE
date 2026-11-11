@@ -279,7 +279,7 @@ function PhysicalStep({ profile, initialWeight, onDone }: StepProps) {
         <Input label="Peso" inputMode="decimal" suffix="kg" error={form.formState.errors.weightKg?.message} {...form.register("weightKg")} />
       </div>
       <label className="mt-6 flex items-start gap-3 rounded-xl border border-line bg-surface p-4 text-[13.5px] leading-relaxed text-mist">
-        <input type="checkbox" className="mt-1 size-4 accent-[#c8f03c]" {...form.register("consentHealth")} />
+        <input type="checkbox" className="mt-1 size-4 accent-[#ccff00]" {...form.register("consentHealth")} />
         <span>
           <span className="font-semibold text-bone">Autorizo guardar meus dados corporais</span> para acompanhar minha evolução.
           Só eu e o personal vinculado a mim podemos vê-los. Posso pedir a exclusão a qualquer momento.

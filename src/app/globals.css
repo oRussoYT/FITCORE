@@ -16,8 +16,8 @@
   --color-bone: #eceee8;
   --color-mist: #a3aaa6;
   --color-fog: #6f7773;
-  --color-lime: #c8f03c;
-  --color-lime-deep: #9cc21a;
+  --color-lime: #ccff00;
+  --color-lime-deep: #a6d400;
   --color-ice: #8fc9f2;
   --color-amber: #f0b64a;
   --color-coral: #ff7a66;
@@ -83,11 +83,3 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
-}

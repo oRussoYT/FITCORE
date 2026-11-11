@@ -24,7 +24,7 @@ export function FrequencyCard({ data }: { data: FrequencyIndicator }) {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data.weeks} margin={{ top: 4, right: 0, bottom: 0, left: 0 }}>
               <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fill: "#6f7773", fontSize: 10 }} interval={1} />
-              {data.target !== null && <ReferenceLine y={data.target} stroke="#c8f03c" strokeDasharray="3 4" strokeOpacity={0.6} />}
+              {data.target !== null && <ReferenceLine y={data.target} stroke="#ccff00" strokeDasharray="3 4" strokeOpacity={0.6} />}
               <Tooltip
                 cursor={{ fill: "rgba(255,255,255,0.04)" }}
                 contentStyle={{ background: "#22272b", border: "1px solid #3a4146", borderRadius: 10, fontSize: 12 }}

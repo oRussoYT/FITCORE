@@ -1,9 +1,9 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 
 export function Marquee({ items, reverse = false }: { items: string[]; reverse?: boolean }) {
-  const reduce = useReducedMotion();
+  const reduce = false as boolean;
   const row = (
     <div className="flex shrink-0 items-center gap-10 pr-10">
       {items.map((t) => (

@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { animate, useReducedMotion } from "framer-motion";
+import { animate } from "framer-motion";
 
 export function AnimatedNumber({ value, digits = 1, className }: { value: number; digits?: number; className?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const reduce = useReducedMotion();
+  const reduce = false as boolean;
   const fmt = (n: number) => n.toLocaleString("pt-BR", { minimumFractionDigits: digits, maximumFractionDigits: digits });
 
   useEffect(() => {

@@ -10,7 +10,7 @@ export function SignupsChart({ data }: { data: Array<{ day: string; count: numbe
         <BarChart data={rows}>
           <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fill: "#6f7773", fontSize: 10 }} interval={4} />
           <Tooltip contentStyle={{ background: "#22272b", border: "1px solid #3a4146", borderRadius: 10, fontSize: 12 }} formatter={(v) => [v, "Cadastros"]} />
-          <Bar dataKey="count" fill="#c8f03c" radius={[3, 3, 0, 0]} />
+          <Bar dataKey="count" fill="#ccff00" radius={[3, 3, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { BodyAnatomy } from "@/components/body/BodyAnatomy";
 
 /** Sequência ilustrativa de treinos (demonstração — não são dados de ninguém). */
@@ -13,7 +13,7 @@ const DEMO_DAYS: Array<{ name: string; groups: Record<string, number> }> = [
 ];
 
 export function AnatomyShowcase({ compact = false }: { compact?: boolean }) {
-  const reduce = useReducedMotion();
+  const reduce = false as boolean;
   const [i, setI] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
 

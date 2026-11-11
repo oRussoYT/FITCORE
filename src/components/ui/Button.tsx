@@ -15,7 +15,7 @@ export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-lime text-ink hover:bg-[#d6f760] active:bg-lime-deep shadow-[0_0_0_1px_rgba(200,240,60,0.4),0_8px_24px_-12px_rgba(200,240,60,0.6)]",
+    "bg-lime text-ink hover:bg-[#ddff4d] active:bg-lime-deep shadow-[0_0_0_1px_rgba(204,255,0,0.4),0_8px_24px_-12px_rgba(204,255,0,0.6)]",
   secondary: "bg-raised text-bone border border-line hover:border-line-strong hover:bg-[#282e32]",
   ghost: "text-mist hover:text-bone hover:bg-raised",
   danger: "bg-transparent text-coral border border-coral/40 hover:bg-coral/10",
