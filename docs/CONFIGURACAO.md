@@ -49,3 +49,12 @@ administrador e administrador de outra academia, e confirmam quem consegue ver o
 4. No painel, veja peso e IMC já calculados com seus dados.
 5. Em **Minha evolução → Nova avaliação**, registre uma segunda avaliação: os cartões passam a mostrar diferença e variação.
 6. Em **Perfil**, baixe seus dados ou teste a exclusão.
+
+## Área administrativa (oculta)
+
+- O endereço da área fica na variável secreta `ADMIN_PATH` da Vercel (só Production). Ele nunca aparece no código.
+  Para trocar: edite a variável e publique de novo.
+- Quem é admin fica registrado só no banco (`private.platform_admin_emails`). A conta vira admin quando o e-mail é confirmado.
+- Primeiro acesso: crie a conta com o e-mail autorizado, confirme o e-mail, abra o endereço secreto e cadastre o
+  app autenticador (QR code). Depois disso, toda entrada pede o código de 6 números.
+- Para qualquer outra pessoa, o endereço se comporta como uma página protegida comum ou inexistente.
