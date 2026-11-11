@@ -9,7 +9,7 @@ const uuid = z.string().uuid();
 
 async function notifyStudent(ctx: Awaited<ReturnType<typeof getAuthContext>>, studentId: string, kind: "trainer_note" | "workout_released", title: string, body: string) {
   const s = await ctx.supabase.from("students").select("user_id").eq("id", studentId).maybeSingle();
-  if (s.data?.user_id) {
+  if (s.data?.user_id && s.data.user_id !== ctx.userId) {
     await ctx.supabase.from("notifications").insert({ user_id: s.data.user_id, kind, title, body, link: "/dashboard" });
   }
 }
@@ -26,6 +26,7 @@ export async function addNote(input: unknown): Promise<ActionResult> {
   if (error) return { ok: false, error: "Você não tem permissão para este aluno ou a conexão falhou." };
   if (parsed.data.visible) await notifyStudent(ctx, parsed.data.studentId, "trainer_note", "Seu personal deixou uma observação", parsed.data.body.slice(0, 140));
   revalidatePath(`/personal/${parsed.data.studentId}`);
+  revalidatePath("/treinos");
   return { ok: true };
 }
 
@@ -51,6 +52,7 @@ export async function createPlan(input: unknown): Promise<ActionResult> {
   if (error) return { ok: false, error: "Não foi possível criar o treino." };
   await notifyStudent(ctx, parsed.data.studentId, "workout_released", `Treino ${parsed.data.label} liberado`, parsed.data.name);
   revalidatePath(`/personal/${parsed.data.studentId}`);
+  revalidatePath("/treinos");
   return { ok: true };
 }
 
@@ -60,6 +62,7 @@ export async function archivePlan(planId: string, studentId: string): Promise<Ac
   const { error } = await ctx.supabase.from("workout_plans").update({ is_active: false }).eq("id", planId);
   if (error) return { ok: false, error: "Não foi possível arquivar." };
   revalidatePath(`/personal/${studentId}`);
+  revalidatePath("/treinos");
   return { ok: true };
 }
 
@@ -91,6 +94,7 @@ export async function addExercise(input: unknown): Promise<ActionResult> {
   });
   if (error) return { ok: false, error: "Não foi possível adicionar o exercício." };
   revalidatePath(`/personal/${parsed.data.studentId}`);
+  revalidatePath("/treinos");
   return { ok: true };
 }
 
@@ -100,5 +104,6 @@ export async function removeExercise(id: string, studentId: string): Promise<Act
   const { error } = await ctx.supabase.from("workout_exercises").delete().eq("id", id);
   if (error) return { ok: false, error: "Não foi possível remover." };
   revalidatePath(`/personal/${studentId}`);
+  revalidatePath("/treinos");
   return { ok: true };
 }

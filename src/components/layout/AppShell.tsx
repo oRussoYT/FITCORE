@@ -58,7 +58,7 @@ export function AppShell({
         className="sticky top-0 hidden h-dvh shrink-0 flex-col border-r border-line bg-graphite lg:flex"
       >
         <div className="flex h-16 items-center px-5">
-          <Link href="/dashboard" aria-label="Início">
+          <Link href="/" aria-label="FITCORE AI — página inicial">
             <Logo compact={collapsed} />
           </Link>
         </div>
@@ -106,7 +106,7 @@ export function AppShell({
 
       {/* Topo (celular/tablet) */}
       <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-line bg-ink/85 px-4 backdrop-blur lg:hidden">
-        <Link href="/dashboard" aria-label="Início">
+        <Link href="/" aria-label="FITCORE AI — página inicial">
           <Logo />
         </Link>
       </header>

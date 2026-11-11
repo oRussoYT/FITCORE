@@ -26,7 +26,7 @@ export default async function OnboardingPage() {
   return (
     <div className="min-h-dvh">
       <header className="mx-auto flex max-w-3xl items-center justify-between px-5 py-6">
-        <Logo />
+        <Link href="/" aria-label="FITCORE AI — página inicial"><Logo /></Link>
         <Link href="/academia" className="text-[13px] text-mist underline-offset-4 hover:text-bone hover:underline">
           Sou dono de academia
         </Link>
