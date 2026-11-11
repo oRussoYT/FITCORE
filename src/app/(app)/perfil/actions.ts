@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 import { getAuthContext } from "@/lib/db/context";
 import type { ActionResult } from "@/lib/validation/common";
 import { profileSchema } from "@/lib/validation/profile";
@@ -37,26 +36,6 @@ export async function requestAccountDeletion(reason: string): Promise<ActionResu
   if (pending.data) return { ok: true };
   const { error } = await ctx.supabase.from("data_requests").insert({ user_id: ctx.userId, kind: "delete", reason: reason.slice(0, 500) || null });
   if (error) return { ok: false, error: "Não foi possível registrar o pedido." };
-  revalidatePath("/perfil");
-  return { ok: true };
-}
-
-const reviewSchema = z.object({
-  rating: z.number().int().min(1, "Escolha de 1 a 5 estrelas.").max(5),
-  body: z.string().trim().min(10, "Escreva pelo menos 10 caracteres.").max(600),
-  displayName: z.string().trim().min(2, "Informe um nome de exibição.").max(60),
-});
-
-/** Cria ou atualiza a avaliação do próprio usuário (sempre volta para moderação). */
-export async function saveReview(input: unknown): Promise<ActionResult> {
-  const parsed = reviewSchema.safeParse(input);
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Dados inválidos." };
-  const ctx = await getAuthContext();
-  const { error } = await ctx.supabase.from("platform_reviews").upsert(
-    { user_id: ctx.userId, rating: parsed.data.rating, body: parsed.data.body, display_name: parsed.data.displayName, status: "pending" },
-    { onConflict: "user_id" },
-  );
-  if (error) return { ok: false, error: "Não foi possível enviar sua avaliação." };
   revalidatePath("/perfil");
   return { ok: true };
 }

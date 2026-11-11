@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Award, Download, Flame, Lock } from "lucide-react";
+import Link from "next/link";
+import { Award, Download, Flame, Lock, Star } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { ensureStudent, getAuthContext } from "@/lib/db/context";
 import { signedAvatarUrl } from "@/lib/db/dashboard";
@@ -8,7 +9,6 @@ import { GOAL_LABELS, LEVEL_LABELS } from "@/lib/domain/labels";
 import { signOut } from "../actions";
 import { PrivacyActions } from "./PrivacyActions";
 import { AvatarPicker, ProfileForm } from "./ProfileClient";
-import { ReviewForm } from "./ReviewForm";
 
 export const metadata: Metadata = { title: "Perfil" };
 
@@ -17,13 +17,12 @@ export default async function ProfilePage() {
   const p = ctx.profile;
   const student = await ensureStudent(ctx);
 
-  const [avatarUrl, sessionsRes, assessRes, photoRes, setsRes, review, pending] = await Promise.all([
+  const [avatarUrl, sessionsRes, assessRes, photoRes, setsRes, pending] = await Promise.all([
     signedAvatarUrl(ctx, p.avatar_path),
     ctx.supabase.from("workout_sessions").select("started_at").eq("student_id", student.id).eq("status", "completed").order("started_at", { ascending: false }).limit(1000),
     ctx.supabase.from("physical_assessments").select("assessed_at").eq("student_id", student.id),
     ctx.supabase.from("body_photos").select("id", { count: "exact", head: true }).eq("student_id", student.id),
     ctx.supabase.from("workout_logs").select("id", { count: "exact", head: true }).eq("student_id", student.id),
-    ctx.supabase.from("platform_reviews").select("rating, body, display_name, status").eq("user_id", ctx.userId).maybeSingle(),
     ctx.supabase.from("data_requests").select("id, created_at").eq("kind", "delete").eq("status", "pending").maybeSingle(),
   ]);
   const sessionDates = ((sessionsRes.data ?? []) as Array<{ started_at: string }>).map((s) => s.started_at);
@@ -109,7 +108,21 @@ export default async function ProfilePage() {
         </div>
       </section>
 
-      <ReviewForm existing={review.data ?? null} defaultName={name.split(" ")[0] ?? ""} />
+      <Link
+        href="/avaliar"
+        className="mt-6 flex items-center justify-between gap-4 rounded-[28px] border border-line bg-surface p-5 transition-colors hover:border-lime/50"
+      >
+        <span className="flex items-center gap-3">
+          <span className="flex size-11 items-center justify-center rounded-2xl bg-lime text-ink">
+            <Star className="size-5 fill-ink" />
+          </span>
+          <span>
+            <span className="block font-semibold">Avaliar o FITCORE</span>
+            <span className="block text-[13px] text-mist">Conte como está sendo sua experiência</span>
+          </span>
+        </span>
+        <span className="text-[13px] font-semibold text-lime">Avaliar</span>
+      </Link>
 
       <section className="panel mt-6 p-5">
         <h2 className="text-[15px] font-semibold">Privacidade e consentimentos</h2>
