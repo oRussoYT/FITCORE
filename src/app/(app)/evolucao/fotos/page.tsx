@@ -79,6 +79,18 @@ export default async function PhotosPage() {
       </div>
 
       <ConsentPanel photos={consentPhotos} ai={consentAi} />
+      {consentPhotos && (
+        <Link
+          href="/evolucao/ao-vivo"
+          className="flex items-center justify-between gap-4 rounded-[28px] border border-lime/40 bg-[linear-gradient(135deg,rgba(204,255,0,0.12),rgba(204,255,0,0.02))] p-6 transition-colors hover:border-lime"
+        >
+          <span>
+            <span className="block text-[18px] font-semibold">Fazer avaliação ao vivo</span>
+            <span className="mt-1 block text-[14px] text-mist">O coach te guia por voz pela câmera e tira as fotos sozinho.</span>
+          </span>
+          <span className="rounded-full bg-lime px-5 py-2.5 font-bold text-ink">Iniciar</span>
+        </Link>
+      )}
       {consentPhotos && <Uploader studentId={student.id} />}
 
       {compare && (

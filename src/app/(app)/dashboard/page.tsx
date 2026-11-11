@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Camera, Plus } from "lucide-react";
+import { Plus, Video } from "lucide-react";
 import { BodyMapPanel } from "@/components/dashboard/BodyMapPanel";
 import { CoachCard } from "@/components/dashboard/CoachCard";
 import { InvitesBanner } from "@/components/dashboard/InvitesBanner";
@@ -55,10 +55,10 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             <h2 className="text-[17px] font-semibold">Indicadores</h2>
             <div className="flex flex-wrap gap-2">
             <Link
-              href="/evolucao/fotos"
-              className="inline-flex h-9 items-center gap-1.5 rounded-[var(--radius-control)] border border-line bg-raised px-3.5 text-[13px] font-semibold hover:border-line-strong"
+              href="/evolucao/ao-vivo"
+              className="inline-flex h-9 items-center gap-1.5 rounded-[var(--radius-control)] border border-lime/40 bg-lime/10 px-3.5 text-[13px] font-semibold hover:border-lime"
             >
-              <Camera className="size-4" /> Avaliação por foto (IA)
+              <Video className="size-4 text-lime" /> Avaliação ao vivo (IA)
             </Link>
             <Link
               href="/evolucao/nova"

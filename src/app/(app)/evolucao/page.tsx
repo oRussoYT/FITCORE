@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Camera, Plus } from "lucide-react";
+import { Camera, Plus, Video } from "lucide-react";
 import { aiConfigured } from "@/lib/ai/provider";
 import { ReportButton } from "./ReportButton";
 import { ReportView } from "./ReportView";
@@ -46,6 +46,12 @@ export default async function EvolutionPage({ searchParams }: { searchParams: Pr
           <p className="mt-2 text-mist">AI Body Analysis · histórico de todas as avaliações</p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <Link
+            href="/evolucao/ao-vivo"
+            className="inline-flex h-10 items-center gap-1.5 rounded-[var(--radius-control)] border border-lime/40 bg-lime/10 px-4 text-sm font-semibold hover:border-lime"
+          >
+            <Video className="size-4 text-lime" /> Ao vivo (IA)
+          </Link>
           <Link
             href="/evolucao/fotos"
             className="inline-flex h-10 items-center gap-1.5 rounded-[var(--radius-control)] border border-line bg-raised px-4 text-sm font-semibold hover:border-line-strong"
