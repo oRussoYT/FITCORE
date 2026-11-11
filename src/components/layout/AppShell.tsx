@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { cn } from "@/lib/cn";
-import { STUDENT_NAV } from "./nav";
+import { navFor } from "./nav";
 
 const STORAGE_KEY = "fitcore.sidebar.collapsed";
 
@@ -15,8 +15,19 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function AppShell({ children, userName }: { children: React.ReactNode; userName: string }) {
+export function AppShell({
+  children,
+  userName,
+  isTrainer = false,
+  isAdmin = false,
+}: {
+  children: React.ReactNode;
+  userName: string;
+  isTrainer?: boolean;
+  isAdmin?: boolean;
+}) {
   const pathname = usePathname();
+  const nav = navFor({ isTrainer, isAdmin });
   const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
@@ -52,7 +63,7 @@ export function AppShell({ children, userName }: { children: React.ReactNode; us
           </Link>
         </div>
         <nav aria-label="Principal" className="mt-4 flex flex-1 flex-col gap-1 px-3">
-          {STUDENT_NAV.map((item) => {
+          {nav.map((item) => {
             const active = isActive(pathname, item.href);
             const Icon = item.icon;
             return (
@@ -117,7 +128,7 @@ export function AppShell({ children, userName }: { children: React.ReactNode; us
         className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-graphite/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
       >
         <ul className="mx-auto flex max-w-md justify-around">
-          {STUDENT_NAV.map((item) => {
+          {nav.map((item) => {
             const active = isActive(pathname, item.href);
             const Icon = item.icon;
             return (

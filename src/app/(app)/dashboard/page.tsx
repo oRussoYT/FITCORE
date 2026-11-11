@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { BodyMapPanel } from "@/components/dashboard/BodyMapPanel";
+import { CoachCard } from "@/components/dashboard/CoachCard";
+import { InvitesBanner } from "@/components/dashboard/InvitesBanner";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { EvolutionCard } from "@/components/dashboard/EvolutionCard";
 import { FrequencyCard } from "@/components/dashboard/FrequencyCard";
@@ -33,6 +35,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       />
 
       <div className="mt-6 space-y-3">
+        <InvitesBanner invites={data.invites} />
         {params.bemvindo && (
           <Notice tone="success" title="Tudo pronto">
             Seus dados iniciais foram salvos. A partir da próxima avaliação você verá comparações aqui.
@@ -66,6 +69,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             <FrequencyCard data={data.frequency} />
             <GoalCard goal={data.goal} objective={objective} />
           </div>
+          <CoachCard plans={data.coachPlans} notes={data.coachNotes} />
           <EvolutionCard data={data.evolution} />
         </div>
 

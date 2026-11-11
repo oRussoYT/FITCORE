@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
 import { getAuthContext } from "@/lib/db/context";
 import { OnboardingFlow } from "./OnboardingFlow";
@@ -26,6 +27,9 @@ export default async function OnboardingPage() {
     <div className="min-h-dvh">
       <header className="mx-auto flex max-w-3xl items-center justify-between px-5 py-6">
         <Logo />
+        <Link href="/academia" className="text-[13px] text-mist underline-offset-4 hover:text-bone hover:underline">
+          Sou dono de academia
+        </Link>
       </header>
       <main className="mx-auto max-w-3xl px-5 pb-20">
         <OnboardingFlow profile={ctx.profile} initialWeight={initialWeight} />
