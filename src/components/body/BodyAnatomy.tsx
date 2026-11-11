@@ -53,11 +53,17 @@ export type BodyAnatomyProps = {
   selected: string | null;
   onSelect: (group: string | null) => void;
   labelFor: (group: string) => string;
+  /** Recorte: "both" (padrão), só "front" ou só "back" */
+  view?: "both" | "front" | "back";
+  /** Faz o tingimento pulsar (músculo em trabalho) */
+  pulse?: boolean;
 };
 
-export function BodyAnatomy({ intensityFor, selected, onSelect, labelFor }: BodyAnatomyProps) {
+const VIEWBOX = { both: "285 0 966 1024", front: "300 0 410 1024", back: "825 0 410 1024" } as const;
+
+export function BodyAnatomy({ intensityFor, selected, onSelect, labelFor, view = "both", pulse = false }: BodyAnatomyProps) {
   return (
-    <svg viewBox="285 0 966 1024" className="h-full w-full" role="group" aria-label="Corpo visto de frente e de costas">
+    <svg viewBox={VIEWBOX[view]} className="h-full w-full" role="group" aria-label="Corpo visto de frente e de costas">
       <defs>
         <filter id="soft-edge" x="-10%" y="-10%" width="120%" height="120%">
           <feGaussianBlur stdDeviation="7" />
@@ -69,7 +75,8 @@ export function BodyAnatomy({ intensityFor, selected, onSelect, labelFor }: Body
       <image href="/body/anatomia.webp" x={0} y={0} width={1536} height={1024} />
 
       {/* Tingimento por estímulo: vermelho multiplicado sobre o cinza preserva a textura do músculo */}
-      <g style={{ mixBlendMode: "multiply" }} filter="url(#soft-edge)" pointerEvents="none">
+      {pulse && <style>{`@keyframes fc-pulse{0%,100%{opacity:1}50%{opacity:.55}}.fc-pulse{animation:fc-pulse 1.6s ease-in-out infinite}`}</style>}
+      <g style={{ mixBlendMode: "multiply" }} filter="url(#soft-edge)" pointerEvents="none" className={pulse ? "fc-pulse" : undefined}>
         {REGIONS.map((r, i) => {
           const t = intensityFor(r.group);
           if (t <= 0) return null;
@@ -110,12 +117,16 @@ export function BodyAnatomy({ intensityFor, selected, onSelect, labelFor }: Body
         })}
       </g>
 
+      {view === "both" && (
+      <>
       <text x={FRONT_CENTER} y={1012} textAnchor="middle" fill="#6f7773" fontSize={22}>
         Frente
       </text>
       <text x={BACK_CENTER} y={1012} textAnchor="middle" fill="#6f7773" fontSize={22}>
         Costas
       </text>
+      </>
+      )}
     </svg>
   );
 }
