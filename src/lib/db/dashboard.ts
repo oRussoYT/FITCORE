@@ -23,7 +23,7 @@ export async function loadDashboard(ctx: AuthContext, studentId: string) {
   const since30 = new Date(Date.now() - 30 * 86400000).toISOString();
   const since8w = new Date(Date.now() - 8 * 7 * 86400000).toISOString();
 
-  const [assessments, sessionsRes, logsRes, groupsRes, goalRes, notifications, avatarUrl] = await Promise.all([
+  const [assessments, sessionsRes, logsRes, groupsRes, goalRes, notifications, avatarUrl, invitesRes, plansRes, notesRes] = await Promise.all([
     listAssessments(ctx, studentId),
     ctx.supabase
       .from("workout_sessions")
@@ -47,6 +47,9 @@ export async function loadDashboard(ctx: AuthContext, studentId: string) {
       .maybeSingle(),
     loadNotifications(ctx),
     signedAvatarUrl(ctx, ctx.profile.avatar_path),
+    ctx.supabase.from("gym_invites").select("id, role, gyms(name)").eq("status", "pending"),
+    ctx.supabase.from("workout_plans").select("id, label, name, workout_exercises(id)").eq("student_id", studentId).eq("is_active", true).order("label"),
+    ctx.supabase.from("student_notes").select("id, body, created_at").eq("student_id", studentId).eq("visible_to_student", true).order("created_at", { ascending: false }).limit(3),
   ]);
 
   for (const r of [sessionsRes, logsRes, groupsRes, goalRes]) {
@@ -75,6 +78,18 @@ export async function loadDashboard(ctx: AuthContext, studentId: string) {
     notifications,
     avatarUrl,
     hasDemo,
+    invites: ((invitesRes.data ?? []) as unknown as Array<{ id: string; role: "student" | "trainer"; gyms: { name: string } | null }>).map((i) => ({
+      id: i.id,
+      role: i.role,
+      gym_name: i.gyms?.name ?? "Uma academia",
+    })),
+    coachPlans: ((plansRes.data ?? []) as unknown as Array<{ id: string; label: string; name: string; workout_exercises: unknown[] }>).map((p) => ({
+      id: p.id,
+      label: p.label,
+      name: p.name,
+      exercises: p.workout_exercises?.length ?? 0,
+    })),
+    coachNotes: (notesRes.data ?? []) as Array<{ id: string; body: string; created_at: string }>,
   };
 }
 

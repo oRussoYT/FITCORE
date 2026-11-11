@@ -37,9 +37,14 @@ export async function middleware(request: NextRequest) {
   const secret = adminSecret();
   const isAdminPath = secret !== null && (path === `/${secret}` || path.startsWith(`/${secret}/`));
 
-  let response = isAdminPath
-    ? NextResponse.rewrite(new URL(ADMIN_INTERNAL + path.slice(secret.length + 1) + request.nextUrl.search, request.url), { request })
-    : NextResponse.next({ request });
+  // Repassa o caminho atual para os layouts do servidor.
+  const forwarded = new Headers(request.headers);
+  forwarded.set("x-pathname", path);
+  const build = () =>
+    isAdminPath
+      ? NextResponse.rewrite(new URL(ADMIN_INTERNAL + path.slice(secret!.length + 1) + request.nextUrl.search, request.url), { request: { headers: forwarded } })
+      : NextResponse.next({ request: { headers: forwarded } });
+  let response = build();
 
   const supabase = createServerClient(supabaseEnv.url, supabaseEnv.anonKey, {
     cookies: {
@@ -48,9 +53,8 @@ export async function middleware(request: NextRequest) {
       },
       setAll(cookiesToSet) {
         for (const { name, value } of cookiesToSet) request.cookies.set(name, value);
-        response = isAdminPath
-          ? NextResponse.rewrite(new URL(ADMIN_INTERNAL + path.slice(secret!.length + 1) + request.nextUrl.search, request.url), { request })
-          : NextResponse.next({ request });
+        forwarded.set("cookie", request.headers.get("cookie") ?? "");
+        response = build();
         for (const { name, value, options } of cookiesToSet) response.cookies.set(name, value, options);
       },
     },

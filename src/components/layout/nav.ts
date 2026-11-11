@@ -1,4 +1,4 @@
-import { Activity, LayoutDashboard, UserRound, type LucideIcon } from "lucide-react";
+import { Activity, Building2, LayoutDashboard, UserRound, Users, type LucideIcon } from "lucide-react";
 
 export type NavItem = { href: string; label: string; icon: LucideIcon };
 
@@ -8,3 +8,11 @@ export const STUDENT_NAV: NavItem[] = [
   { href: "/evolucao", label: "Minha evolução", icon: Activity },
   { href: "/perfil", label: "Perfil", icon: UserRound },
 ];
+
+export const TRAINER_NAV: NavItem = { href: "/personal", label: "Meus alunos", icon: Users };
+export const GYM_NAV: NavItem = { href: "/academia", label: "Academia", icon: Building2 };
+
+export function navFor(roles: { isTrainer: boolean; isAdmin: boolean }): NavItem[] {
+  const [home, evo, profile] = STUDENT_NAV as [NavItem, NavItem, NavItem];
+  return [home, evo, ...(roles.isTrainer ? [TRAINER_NAV] : []), ...(roles.isAdmin ? [GYM_NAV] : []), profile];
+}
