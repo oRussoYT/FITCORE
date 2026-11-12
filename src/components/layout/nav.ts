@@ -1,16 +1,16 @@
 import { Activity, Building2, Dumbbell, LayoutDashboard, UserRound, Users, type LucideIcon } from "lucide-react";
 
-export type NavItem = { href: string; label: string; icon: LucideIcon };
+export type NavItem = { href: string; label: string; short?: string; icon: LucideIcon };
 
 /** Itens do menu. Cada módulo novo entra aqui quando estiver pronto — nada de link sem página. */
 export const STUDENT_NAV: NavItem[] = [
   { href: "/dashboard", label: "Início", icon: LayoutDashboard },
   { href: "/treinos", label: "Treinos", icon: Dumbbell },
-  { href: "/evolucao", label: "Minha evolução", icon: Activity },
+  { href: "/evolucao", label: "Minha evolução", short: "Evolução", icon: Activity },
   { href: "/perfil", label: "Perfil", icon: UserRound },
 ];
 
-export const TRAINER_NAV: NavItem = { href: "/personal", label: "Meus alunos", icon: Users };
+export const TRAINER_NAV: NavItem = { href: "/personal", label: "Meus alunos", short: "Alunos", icon: Users };
 export const GYM_NAV: NavItem = { href: "/academia", label: "Academia", icon: Building2 };
 
 export function navFor(roles: { isTrainer: boolean; isAdmin: boolean }): NavItem[] {

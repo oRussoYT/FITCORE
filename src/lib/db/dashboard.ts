@@ -23,11 +23,14 @@ export async function loadDashboard(ctx: AuthContext, studentId: string) {
   const since30 = new Date(Date.now() - 30 * 86400000).toISOString();
   const since8w = new Date(Date.now() - 8 * 7 * 86400000).toISOString();
 
-  const [assessments, sessionsRes, logsRes, groupsRes, goalRes, notifications, avatarUrl, invitesRes, plansRes, notesRes] = await Promise.all([
+  const since36h = new Date(Date.now() - 36 * 3600000).toISOString();
+  const since12h = new Date(Date.now() - 12 * 3600000).toISOString();
+
+  const [assessments, sessionsRes, logsRes, groupsRes, goalRes, notifications, avatarUrl, invitesRes, plansRes, notesRes, waterRes, openRes] = await Promise.all([
     listAssessments(ctx, studentId),
     ctx.supabase
       .from("workout_sessions")
-      .select("started_at, is_demo")
+      .select("started_at, is_demo, plan_id")
       .eq("student_id", studentId)
       .eq("status", "completed")
       .gte("started_at", since8w),
@@ -48,8 +51,11 @@ export async function loadDashboard(ctx: AuthContext, studentId: string) {
     loadNotifications(ctx),
     signedAvatarUrl(ctx, ctx.profile.avatar_path),
     ctx.supabase.from("gym_invites").select("id, role, gyms(name)").eq("status", "pending"),
-    ctx.supabase.from("workout_plans").select("id, label, name, workout_exercises(id)").eq("student_id", studentId).eq("is_active", true).order("label"),
+    ctx.supabase.from("workout_plans").select("id, label, name, workout_exercises(id, sets)").eq("student_id", studentId).eq("is_active", true).order("label"),
     ctx.supabase.from("student_notes").select("id, body, created_at").eq("student_id", studentId).eq("visible_to_student", true).order("created_at", { ascending: false }).limit(3),
+    // Água das últimas 36 h: o navegador soma só o "hoje" no fuso da pessoa.
+    ctx.supabase.from("water_logs").select("id, amount_ml, logged_at").eq("student_id", studentId).gte("logged_at", since36h).order("logged_at", { ascending: false }),
+    ctx.supabase.from("workout_sessions").select("id, plan_id").eq("student_id", studentId).in("status", ["in_progress", "paused"]).gte("started_at", since12h).limit(1).maybeSingle(),
   ]);
 
   for (const r of [sessionsRes, logsRes, groupsRes, goalRes]) {
@@ -60,7 +66,8 @@ export async function loadDashboard(ctx: AuthContext, studentId: string) {
   const logs = (logsRes.data ?? []) as unknown as LogRow[];
   const stimulus = muscleStimulus(logs.flatMap((l) => (l.exercises ? [l.exercises] : [])));
 
-  const sessions = (sessionsRes.data ?? []) as Array<{ started_at: string; is_demo: boolean }>;
+  const sessions = (sessionsRes.data ?? []) as Array<{ started_at: string; is_demo: boolean; plan_id: string | null }>;
+  const lastSession = [...sessions].sort((a, b) => b.started_at.localeCompare(a.started_at))[0] ?? null;
   const hasDemo = assessments.some((a) => a.is_demo) || sessions.some((s) => s.is_demo);
 
   return {
@@ -83,13 +90,19 @@ export async function loadDashboard(ctx: AuthContext, studentId: string) {
       role: i.role,
       gym_name: i.gyms?.name ?? "Uma academia",
     })),
-    coachPlans: ((plansRes.data ?? []) as unknown as Array<{ id: string; label: string; name: string; workout_exercises: unknown[] }>).map((p) => ({
+    coachPlans: ((plansRes.data ?? []) as unknown as Array<{ id: string; label: string; name: string; workout_exercises: Array<{ sets: number | null }> }>).map((p) => ({
       id: p.id,
       label: p.label,
       name: p.name,
       exercises: p.workout_exercises?.length ?? 0,
+      sets: (p.workout_exercises ?? []).reduce((s, e) => s + (e.sets ?? 0), 0),
     })),
     coachNotes: (notesRes.data ?? []) as Array<{ id: string; body: string; created_at: string }>,
+    sessionDates: sessions.map((s) => s.started_at),
+    lastSessionAt: lastSession?.started_at ?? null,
+    lastPlanId: lastSession?.plan_id ?? null,
+    openSession: (openRes.data as { id: string; plan_id: string } | null) ?? null,
+    water: (waterRes.data ?? []) as Array<{ id: string; amount_ml: number; logged_at: string }>,
   };
 }
 

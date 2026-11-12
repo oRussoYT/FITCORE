@@ -104,14 +104,18 @@ export function AppShell({
         </div>
       </motion.aside>
 
-      {/* Topo (celular/tablet) */}
-      <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-line bg-ink/85 px-4 backdrop-blur lg:hidden">
-        <Link href="/" aria-label="FITCORE AI — página inicial">
-          <Logo />
-        </Link>
-      </header>
+      {/* Topo (celular/tablet) — no Início o próprio cartão do dia faz esse papel */}
+      {pathname !== "/dashboard" && (
+        <header className="sticky top-0 z-30 border-b border-line bg-ink/85 pt-[env(safe-area-inset-top)] backdrop-blur-xl lg:hidden">
+          <div className="flex h-14 items-center justify-between px-4">
+            <Link href="/" aria-label="FITCORE AI — página inicial">
+              <Logo />
+            </Link>
+          </div>
+        </header>
+      )}
 
-      <div className="min-w-0 flex-1 pb-24 lg:pb-0">
+      <div className={cn("min-w-0 flex-1 pb-[calc(6.5rem+env(safe-area-inset-bottom))] lg:pb-0", pathname === "/dashboard" && "pt-[env(safe-area-inset-top)] lg:pt-0")}>
         <motion.div
           key={pathname}
           initial={{ opacity: 0, y: 6 }}
@@ -122,12 +126,12 @@ export function AppShell({
         </motion.div>
       </div>
 
-      {/* Barra inferior (celular/tablet) */}
+      {/* Barra inferior (celular/tablet), no estilo de aplicativo */}
       <nav
         aria-label="Principal"
-        className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-graphite/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 px-3 pb-[calc(0.6rem+env(safe-area-inset-bottom))] pt-2 lg:hidden"
       >
-        <ul className="mx-auto flex max-w-md justify-around">
+        <ul className="mx-auto flex max-w-md items-center justify-around rounded-[26px] border border-white/10 bg-graphite/90 p-1.5 shadow-[0_18px_50px_-12px_rgba(0,0,0,0.9)] backdrop-blur-xl">
           {nav.map((item) => {
             const active = isActive(pathname, item.href);
             const Icon = item.icon;
@@ -136,10 +140,20 @@ export function AppShell({
                 <Link
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={cn("flex h-16 flex-col items-center justify-center gap-1 text-[11px] font-medium", active ? "text-bone" : "text-fog")}
+                  className={cn(
+                    "relative flex h-14 flex-col items-center justify-center gap-1 rounded-[20px] text-[10.5px] font-semibold transition-colors",
+                    active ? "text-ink" : "text-fog active:text-bone",
+                  )}
                 >
-                  <Icon className={cn("size-5", active && "text-lime")} strokeWidth={1.8} />
-                  {item.label}
+                  {active && (
+                    <motion.span
+                      layoutId="tab-active"
+                      className="absolute inset-0 rounded-[20px] bg-lime"
+                      transition={{ type: "spring", stiffness: 520, damping: 38 }}
+                    />
+                  )}
+                  <Icon className="relative size-[21px]" strokeWidth={active ? 2.3 : 1.8} />
+                  <span className="relative">{item.short ?? item.label}</span>
                 </Link>
               </li>
             );

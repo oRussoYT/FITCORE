@@ -83,3 +83,14 @@
   }
 }
 
+
+/* Sensação de aplicativo no celular */
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+@media (display-mode: standalone) {
+  html,
+  body {
+    overscroll-behavior-y: none;
+  }
+}
