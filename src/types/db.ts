@@ -17,6 +17,7 @@ export type Profile = {
   primary_goal: PrimaryGoal | null;
   experience_level: ExperienceLevel | null;
   weekly_availability: number | null;
+  water_goal_ml?: number | null;
   session_minutes: number | null;
   food_preferences: FoodPreferences;
   onboarding_step: number;

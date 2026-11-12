@@ -4,15 +4,18 @@ import { Plus, Video } from "lucide-react";
 import { BodyMapPanel } from "@/components/dashboard/BodyMapPanel";
 import { CoachCard } from "@/components/dashboard/CoachCard";
 import { InvitesBanner } from "@/components/dashboard/InvitesBanner";
-import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { EvolutionCard } from "@/components/dashboard/EvolutionCard";
 import { FrequencyCard } from "@/components/dashboard/FrequencyCard";
 import { GoalCard } from "@/components/dashboard/GoalCard";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { Notice } from "@/components/ui/Feedback";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
+import { TodayHome } from "@/components/today/TodayHome";
+import { weekStreak } from "@/lib/domain/achievements";
+import { daysSince, nextPlan, pendingItems, waterGoal, weightTrend } from "@/lib/domain/today";
 import { ensureStudent, getAuthContext } from "@/lib/db/context";
 import { loadDashboard } from "@/lib/db/dashboard";
-import { GOAL_LABELS, LEVEL_LABELS } from "@/lib/domain/labels";
+import { GOAL_LABELS } from "@/lib/domain/labels";
 
 export const metadata: Metadata = { title: "Início" };
 
@@ -22,17 +25,30 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const student = await ensureStudent(ctx);
   const data = await loadDashboard(ctx, student.id);
   const objective = ctx.profile.primary_goal ? GOAL_LABELS[ctx.profile.primary_goal] : null;
+  const weight = weightTrend(data.assessments.map((a) => ({ assessed_at: a.assessed_at, weight_kg: a.weight_kg })));
+  const today = new Date();
+  const weekStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() - ((today.getDay() + 6) % 7)).getTime();
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
-      <DashboardHeader
-        name={ctx.profile.full_name ?? "Aluno"}
-        avatarUrl={data.avatarUrl}
-        level={ctx.profile.experience_level ? LEVEL_LABELS[ctx.profile.experience_level] : null}
-        objective={objective}
-        lastAssessment={data.assessments.at(-1)?.assessed_at ?? null}
-        notifications={data.notifications}
-      />
+      <TodayHome
+          name={ctx.profile.full_name ?? "Aluno"}
+          avatarUrl={data.avatarUrl}
+          notifications={data.notifications}
+          weekStreak={weekStreak(data.sessionDates)}
+          daysWithoutTraining={daysSince(data.lastSessionAt)}
+          pending={pendingItems({ lastAssessmentAt: data.assessments.at(-1)?.assessed_at ?? null, hasAvatar: Boolean(data.avatarUrl), hasPlans: data.coachPlans.length > 0 })}
+          plan={nextPlan(data.coachPlans, data.lastPlanId)}
+          openSessionId={data.openSession?.id ?? null}
+          water={data.water}
+          waterGoal={waterGoal(weight?.kg ?? null, ctx.profile.water_goal_ml)}
+          weight={weight}
+          weekSessions={data.sessionDates.filter((d) => new Date(d).getTime() >= weekStart).length}
+          weekTarget={ctx.profile.weekly_availability ?? null}
+        />
+      <div className="mt-5">
+        <InstallPrompt />
+      </div>
 
       <div className="mt-6 space-y-3">
         <InvitesBanner invites={data.invites} />
@@ -52,7 +68,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] xl:grid-cols-[minmax(0,1fr)_400px]">
         <div className="min-w-0 space-y-6">
           <div className="flex items-end justify-between gap-4">
-            <h2 className="text-[17px] font-semibold">Indicadores</h2>
+            <h2 className="text-[17px] font-semibold">Seu corpo em números</h2>
             <div className="flex flex-wrap gap-2">
             <Link
               href="/evolucao/ao-vivo"
