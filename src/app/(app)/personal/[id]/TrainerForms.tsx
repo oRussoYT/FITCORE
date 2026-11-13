@@ -87,11 +87,14 @@ export function ExerciseForm({
   planId,
   studentId,
   exercises,
+  compact = false,
 }: {
   planId: string;
   studentId: string;
   exercises: Array<{ id: string; name: string; group: string }>;
+  compact?: boolean;
 }) {
+  const [added, setAdded] = useState<string | null>(null);
   const [exerciseId, setExerciseId] = useState("");
   const [sets, setSets] = useState("3");
   const [reps, setReps] = useState("10-12");
@@ -101,10 +104,23 @@ export function ExerciseForm({
   const groups = [...new Set(exercises.map((e) => e.group))];
   return (
     <form
-      className="mt-4 grid gap-3 rounded-xl border border-dashed border-line p-4 sm:grid-cols-[2fr_80px_100px_100px_100px_auto] sm:items-end"
+      className={
+        compact
+          ? "mt-3 grid grid-cols-2 gap-3 rounded-xl border border-dashed border-line p-4 sm:grid-cols-4 [&>*:first-child]:col-span-2 sm:[&>*:first-child]:col-span-4"
+          : "mt-4 grid gap-3 rounded-xl border border-dashed border-line p-4 sm:grid-cols-[2fr_80px_100px_100px_100px_auto] sm:items-end"
+      }
       onSubmit={(e) => {
         e.preventDefault();
-        r.run(() => addExercise({ planId, studentId, exerciseId, sets, reps, rest, load }), () => setLoad(""));
+        const name = exercises.find((x) => x.id === exerciseId)?.name ?? "Exercício";
+        setAdded(null);
+        r.run(
+          () => addExercise({ planId, studentId, exerciseId, sets, reps, rest, load }),
+          () => {
+            setLoad("");
+            setExerciseId("");
+            setAdded(name);
+          },
+        );
       }}
     >
       <Select label="Exercício" value={exerciseId} onChange={(e) => setExerciseId(e.target.value)}>
@@ -125,10 +141,11 @@ export function ExerciseForm({
       <Input label="Repetições" value={reps} onChange={(e) => setReps(e.target.value)} />
       <Input label="Descanso" value={rest} onChange={(e) => setRest(e.target.value)} inputMode="numeric" suffix="s" />
       <Input label="Carga" value={load} onChange={(e) => setLoad(e.target.value)} inputMode="decimal" suffix="kg" />
-      <Button type="submit" size="md" loading={r.pending} disabled={!exerciseId}>
+      <Button type="submit" size="md" loading={r.pending} disabled={!exerciseId} className={compact ? "col-span-2 sm:col-span-4" : undefined}>
         Adicionar
       </Button>
-      {r.error && <Notice tone="error" className="sm:col-span-6">{r.error}</Notice>}
+      {added && !r.error && <Notice tone="success" className={compact ? "col-span-2 sm:col-span-4" : "sm:col-span-6"}>{added} adicionado ao treino.</Notice>}
+      {r.error && <Notice tone="error" className={compact ? "col-span-2 sm:col-span-4" : "sm:col-span-6"}>{r.error}</Notice>}
     </form>
   );
 }

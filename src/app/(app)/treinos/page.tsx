@@ -86,7 +86,7 @@ export default async function WorkoutsPage({ searchParams }: { searchParams: Pro
               for (const s of it.exercises.secondary_muscles ?? []) muscles[s] = Math.max(muscles[s] ?? 0, 0.45);
             }
             return (
-              <li key={p.id} className="panel flex gap-4 p-5">
+              <li key={p.id} id={`treino-${p.label}`} className="panel flex scroll-mt-24 gap-4 p-5">
                 <div className="hidden h-40 w-28 shrink-0 sm:block">
                   <BodyAnatomy intensityFor={(g) => muscles[g] ?? 0} selected={null} onSelect={() => {}} labelFor={(g) => g} />
                 </div>
@@ -106,6 +106,20 @@ export default async function WorkoutsPage({ searchParams }: { searchParams: Pro
                     ))}
                     {items.length > 5 && <li className="text-fog">+{items.length - 5}</li>}
                   </ol>
+                  {items.length === 0 && (
+                    <p className="mt-3 rounded-xl bg-amber/10 px-3 py-2 text-[13px] text-amber">
+                      Este treino está vazio. Adicione o primeiro exercício abaixo para poder começar.
+                    </p>
+                  )}
+                  {!hasTrainer && (
+                    <details className="group mt-3" open={items.length === 0}>
+                      <summary className="cursor-pointer list-none text-[13.5px] font-semibold text-lime">
+                        <span className="group-open:hidden">+ Adicionar exercício</span>
+                        <span className="hidden group-open:inline">− Fechar</span>
+                      </summary>
+                      <ExerciseForm planId={p.id} studentId={student.id} exercises={exercises} compact />
+                    </details>
+                  )}
                   <div className="mt-auto flex justify-end pt-4">
                     <StartButton planId={p.id} resume={open.has(p.id)} disabled={items.length === 0} />
                   </div>
@@ -118,18 +132,11 @@ export default async function WorkoutsPage({ searchParams }: { searchParams: Pro
 
       {!hasTrainer && (
         <section className="mt-12">
-          <h2 className="text-[17px] font-semibold">Montar treino</h2>
+          <h2 className="text-[17px] font-semibold">Criar outro treino</h2>
+          <p className="mt-1 text-[13px] text-mist">Dê uma letra e um nome. Depois adicione os exercícios no cartão do treino, aqui em cima.</p>
           <div className="mt-4">
             <NewPlanForm studentId={student.id} usedLabels={plans.map((p) => p.label)} />
           </div>
-          {plans.map((p) => (
-            <div key={p.id} className="mt-4">
-              <p className="text-[14px] font-semibold">
-                Adicionar exercício ao Treino {p.label} · {p.name}
-              </p>
-              <ExerciseForm planId={p.id} studentId={student.id} exercises={exercises} />
-            </div>
-          ))}
         </section>
       )}
 

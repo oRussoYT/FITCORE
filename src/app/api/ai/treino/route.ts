@@ -91,7 +91,11 @@ export async function POST(request: Request) {
     if (error || !plan) return NextResponse.json({ error: "Não foi possível salvar o treino." }, { status: 500 });
     const rows = p.exercises.map((e, i) => ({ plan_id: plan.id, exercise_id: e.id, position: i, sets: e.sets, reps: e.reps, rest_seconds: e.rest_seconds, notes: e.notes ?? null }));
     const ins = await ctx.supabase.from("workout_exercises").insert(rows);
-    if (ins.error) return NextResponse.json({ error: "Não foi possível salvar os exercícios." }, { status: 500 });
+    if (ins.error) {
+      console.error("[ai] treino exercícios", ins.error.message);
+      await ctx.supabase.from("workout_plans").delete().eq("id", plan.id);
+      return NextResponse.json({ error: "Não foi possível salvar os exercícios. Tente de novo." }, { status: 500 });
+    }
   }
 
   await ctx.supabase.from("notifications").insert({ user_id: ctx.userId, kind: "workout_released", title: "A IA montou seus treinos", body: parsed.data.summary?.slice(0, 200) ?? null, link: "/treinos" });
