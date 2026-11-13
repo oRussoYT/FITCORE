@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { ActionButton } from "@/components/ui/ActionButton";
-import { aiConfigured } from "@/lib/ai/provider";
+import { aiConfigured, consentMatches, providerInfo } from "@/lib/ai/provider";
 import { ensureStudent, getAuthContext } from "@/lib/db/context";
 import { deletePhoto } from "./actions";
 import { AnalyzeButton, BeforeAfter, ConsentPanel, Uploader } from "./PhotoClient";
@@ -17,12 +17,12 @@ export default async function PhotosPage() {
   const student = await ensureStudent(ctx);
   const [photosRes, consentRes, reportsRes] = await Promise.all([
     ctx.supabase.from("body_photos").select("id, storage_path, pose, taken_at").eq("student_id", student.id).order("taken_at", { ascending: false }).limit(60),
-    ctx.supabase.from("consent_records").select("granted").eq("user_id", ctx.userId).eq("consent_type", "ai_analysis").order("created_at", { ascending: false }).limit(1).maybeSingle(),
+    ctx.supabase.from("consent_records").select("granted, version").eq("user_id", ctx.userId).eq("consent_type", "ai_analysis").order("created_at", { ascending: false }).limit(1).maybeSingle(),
     ctx.supabase.from("body_analysis_reports").select("id, content, created_at").eq("student_id", student.id).eq("kind", "photo").order("created_at", { ascending: false }).limit(5),
   ]);
   const photos = (photosRes.data ?? []) as Array<{ id: string; storage_path: string; pose: string; taken_at: string }>;
   const consentPhotos = Boolean(ctx.profile.consent_photos_at);
-  const consentAi = Boolean(consentRes.data?.granted);
+  const consentAi = Boolean(consentRes.data?.granted) && consentMatches(consentRes.data?.version);
 
   // Links temporários (10 minutos) — as fotos nunca ficam públicas.
   const signed = photos.length
@@ -78,7 +78,7 @@ export default async function PhotosPage() {
         </p>
       </div>
 
-      <ConsentPanel photos={consentPhotos} ai={consentAi} />
+      <ConsentPanel photos={consentPhotos} ai={consentAi} provider={providerInfo().name} privacy={providerInfo().privacy} />
       {consentPhotos && (
         <Link
           href="/evolucao/ao-vivo"
