@@ -37,8 +37,13 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           notifications={data.notifications}
           weekStreak={weekStreak(data.sessionDates)}
           daysWithoutTraining={daysSince(data.lastSessionAt)}
-          pending={pendingItems({ lastAssessmentAt: data.assessments.at(-1)?.assessed_at ?? null, hasAvatar: Boolean(data.avatarUrl), hasPlans: data.coachPlans.length > 0 })}
-          plan={nextPlan(data.coachPlans, data.lastPlanId)}
+          pending={[
+            ...data.coachPlans
+              .filter((p) => p.exercises === 0)
+              .map((p) => ({ key: `vazio-${p.id}`, title: `Treino ${p.label} está vazio`, detail: `${p.name} · adicione os exercícios`, href: `/treinos#treino-${p.label}` })),
+            ...pendingItems({ lastAssessmentAt: data.assessments.at(-1)?.assessed_at ?? null, hasAvatar: Boolean(data.avatarUrl), hasPlans: data.coachPlans.length > 0 }),
+          ]}
+          plan={nextPlan(data.coachPlans.filter((p) => p.exercises > 0), data.lastPlanId)}
           openSessionId={data.openSession?.id ?? null}
           water={data.water}
           waterGoal={waterGoal(weight?.kg ?? null, ctx.profile.water_goal_ml)}

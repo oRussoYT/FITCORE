@@ -15,7 +15,10 @@ export async function addWater(ml: number): Promise<ActionResult<{ id: string }>
   const ctx = await getAuthContext();
   const student = await ensureStudent(ctx);
   const { data, error } = await ctx.supabase.from("water_logs").insert({ student_id: student.id, amount_ml: parsed.data }).select("id").single();
-  if (error || !data) return { ok: false, error: "Não foi possível registrar a água." };
+  if (error || !data) {
+    console.error("[agua]", error?.message);
+    return { ok: false, error: "Não foi possível registrar a água agora. Tente de novo em instantes." };
+  }
   revalidatePath("/dashboard");
   return { ok: true, data: { id: data.id as string } };
 }
