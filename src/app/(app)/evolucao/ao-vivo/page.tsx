@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LiveAssessment } from "@/components/live/LiveAssessment";
-import { aiConfigured } from "@/lib/ai/provider";
+import { aiConfigured, consentMatches } from "@/lib/ai/provider";
 import { ensureStudent, getAuthContext } from "@/lib/db/context";
 
 export const metadata: Metadata = { title: "Avaliação ao vivo" };
@@ -11,7 +11,7 @@ export default async function LivePage() {
   const student = await ensureStudent(ctx);
   const { data: consent } = await ctx.supabase
     .from("consent_records")
-    .select("granted")
+    .select("granted, version")
     .eq("user_id", ctx.userId)
     .eq("consent_type", "ai_analysis")
     .order("created_at", { ascending: false })
@@ -32,5 +32,5 @@ export default async function LivePage() {
     );
   }
 
-  return <LiveAssessment studentId={student.id} canAnalyze={Boolean(consent?.granted) && aiConfigured()} />;
+  return <LiveAssessment studentId={student.id} canAnalyze={Boolean(consent?.granted) && consentMatches(consent?.version) && aiConfigured()} />;
 }

@@ -33,7 +33,7 @@ async function shrink(file: File): Promise<Blob> {
   return new Promise((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("falha"))), "image/jpeg", 0.85));
 }
 
-export function ConsentPanel({ photos, ai }: { photos: boolean; ai: boolean }) {
+export function ConsentPanel({ photos, ai, provider, privacy }: { photos: boolean; ai: boolean; provider: string; privacy: string }) {
   const router = useRouter();
   const [p, setP] = useState(photos);
   const [a, setA] = useState(ai);
@@ -56,7 +56,7 @@ export function ConsentPanel({ photos, ai }: { photos: boolean; ai: boolean }) {
         <label className={cn("flex items-start gap-3", !p && "opacity-50")}>
           <input type="checkbox" className="mt-1 size-4 accent-[#ccff00]" checked={a && p} disabled={!p} onChange={(e) => setA(e.target.checked)} />
           <span>
-            <b>Enviar as fotos para análise da IA</b> (serviço da Anthropic, usado só para gerar o relatório). A IA descreve postura e
+            <b>Enviar as fotos para análise da IA</b> (serviço: {provider}. {privacy}) A IA descreve postura e
             mudanças visíveis; não estima gordura, massa muscular nem faz diagnóstico.
           </span>
         </label>

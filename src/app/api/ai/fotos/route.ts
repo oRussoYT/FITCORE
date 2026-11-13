@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { aiConfigured, callAI, parseJsonBlock, type AiImage } from "@/lib/ai/provider";
+import { aiConfigured, callAI, consentMatches, parseJsonBlock, providerInfo, type AiImage } from "@/lib/ai/provider";
 import { PHOTO_SYSTEM } from "@/lib/ai/prompts";
 import { createClient } from "@/lib/supabase/server";
 
@@ -20,11 +20,14 @@ export async function POST() {
   const [{ data: student }, { data: profile }, { data: consent }] = await Promise.all([
     supabase.from("students").select("id").eq("user_id", user.id).maybeSingle(),
     supabase.from("profiles").select("consent_photos_at").eq("id", user.id).maybeSingle(),
-    supabase.from("consent_records").select("granted").eq("user_id", user.id).eq("consent_type", "ai_analysis").order("created_at", { ascending: false }).limit(1).maybeSingle(),
+    supabase.from("consent_records").select("granted, version").eq("user_id", user.id).eq("consent_type", "ai_analysis").order("created_at", { ascending: false }).limit(1).maybeSingle(),
   ]);
   if (!student) return NextResponse.json({ error: "Complete seu cadastro primeiro." }, { status: 400 });
-  if (!profile?.consent_photos_at || !consent?.granted) {
-    return NextResponse.json({ error: "Autorize o envio das fotos para análise da IA antes de continuar." }, { status: 403 });
+  if (!profile?.consent_photos_at || !consent?.granted || !consentMatches(consent.version)) {
+    return NextResponse.json(
+      { error: `Autorize o envio das fotos para a IA (${providerInfo().name}) na página de fotos antes de continuar.` },
+      { status: 403 },
+    );
   }
   if (!aiConfigured()) {
     return NextResponse.json({ error: "A análise por IA ainda não foi ativada pelo administrador do sistema." }, { status: 503 });

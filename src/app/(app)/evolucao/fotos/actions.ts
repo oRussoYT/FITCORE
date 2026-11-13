@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { ensureStudent, getAuthContext } from "@/lib/db/context";
 import type { ActionResult } from "@/lib/validation/common";
+import { consentVersion } from "@/lib/ai/provider";
 
 export async function setPhotoConsent(input: unknown): Promise<ActionResult> {
   const parsed = z.object({ photos: z.boolean(), ai: z.boolean() }).safeParse(input);
@@ -12,7 +13,7 @@ export async function setPhotoConsent(input: unknown): Promise<ActionResult> {
   const now = new Date().toISOString();
   const recs = [
     { user_id: ctx.userId, consent_type: "body_photos", granted: parsed.data.photos },
-    { user_id: ctx.userId, consent_type: "ai_analysis", granted: parsed.data.ai && parsed.data.photos },
+    { user_id: ctx.userId, consent_type: "ai_analysis", granted: parsed.data.ai && parsed.data.photos, version: consentVersion() },
   ];
   const a = await ctx.supabase.from("consent_records").insert(recs);
   const b = await ctx.supabase.from("profiles").update({ consent_photos_at: parsed.data.photos ? (ctx.profile.consent_photos_at ?? now) : null }).eq("id", ctx.userId);
